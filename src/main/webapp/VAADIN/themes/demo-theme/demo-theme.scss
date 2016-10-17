@@ -1,0 +1,150 @@
+
+$menu-background-color: #38414A;
+
+$v-link-font-color: #59ACFF;
+$v-link-text-decoration: none;
+$v-bevel: false;
+$v-shadow: false;
+$v-gradient: false;
+
+@import "../valo/valo.scss";
+@import "prettify.scss";
+
+@mixin demo-theme {
+  @include valo;
+
+  // Include SplitPanel styles manually (avoid any excess output and also modify the splitter size)
+  @include valo-splitpanel-global;
+
+  .v-splitpanel-horizontal {
+    @include valo-splitpanel-style($orientation: horizontal, $splitter-size: 0);
+  }
+
+  .v-splitpanel-first-container-main-layout {
+    @include linear-gradient(to left, darken($menu-background-color, 5%) 0, $menu-background-color 9px);
+    color: valo-font-color($menu-background-color);
+  }
+
+  .v-splitpanel-second-container-main-layout {
+  }
+
+  .panel {
+  	@include linear-gradient(to left, darken($menu-background-color, 5%) 0, $menu-background-color 9px);
+    color: valo-font-color($menu-background-color);
+    border-style: none;
+  }
+
+  // Sidebar links
+
+  .v-slot-links {
+    text-align: center;
+  }
+
+  .links {
+    font-size: $v-font-size--tiny;
+    font-weight: $v-font-weight + 100;
+    margin: 0 auto;
+  }
+
+  .links > .v-spacing {
+    text-align: center;
+    width: 1.6em;
+
+    &:before {
+      content: "\00b7";
+    }
+  }
+
+  // Tree
+
+  .v-tree {
+    font-weight: $v-font-weight + 100;
+    color: valo-font-color($menu-background-color, 0.5);
+  }
+
+  .v-tree-node {
+    padding-bottom: 10px;
+  }
+
+  .v-tree-node-selected {
+    border-radius: 0;
+    $bg-color: darken($menu-background-color, 4%);
+    background-color: $bg-color;
+    color: valo-font-color($bg-color, 1);
+  }
+
+  .description {
+    font-weight: lighter;
+    font-size: $v-font-size--small;
+    padding-left: 18px;
+    pointer-events:none;
+  }
+
+  .v-tree-node-caption {
+    height: 100%;
+  }
+
+  .v-tree-node-caption::after {
+    // Tree node selection
+    display: none;
+  }
+
+  .v-progressbar-wrapper {
+  	height: 30px;
+  }
+
+  .gwt-FileUpload {
+
+  }
+
+  .link {
+    bottom: 20px;
+    left: 0px;
+    text-align: center;
+    width: 300px;
+    height: 40px;
+    color: #c5cacf;
+    vertical-align: middle;
+    font-size: 32px;
+
+  }
+
+  .version {
+    text-align: right;
+	width: 300px;
+    height: 30px;
+    color: #c5cacf;
+    vertical-align: bottom;
+    font-size: 12px;
+    padding-right: 10px;
+  }
+
+  .v-icon + span {
+    margin-left: 14px;
+    position: relative;
+    bottom: 4px;
+    font-size: 16px;
+  }
+
+
+  .logo {
+    color: valo-font-color($menu-background-color, 1);
+    font-weight: $v-font-weight + 100;
+    text-align: center;
+    background: transparent url("vaadin-spreadsheet-logo.svg") no-repeat 50% 10px;
+    background-size: 70px 70px;
+    padding-top: 90px;
+    margin-bottom: 4px;
+
+    .v-ie8 & {
+      background-image: url("vaadin-spreadsheet-logo.png");
+    }
+  }
+
+  pre.prettyprint {
+    font-size: $v-font-size--small;
+    border: none;
+    padding: round($v-unit-size / 2) $v-unit-size;
+    font-family: Menlo, Consolas, Courier New, monospace;
+  }
+}
