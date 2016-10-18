@@ -126,6 +126,7 @@ horizontalPanel.setSizeFull();
         panel.setSizeFull();
         panel.setStyleName("panel");
 
+        
         content.setSizeFull();
         content.addComponents( panel);
         content.setExpandRatio(panel, 1);
