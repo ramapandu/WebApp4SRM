@@ -78,6 +78,10 @@ public class FileUploadExample implements SpreadsheetExample, Receiver,
 
     private void initSpreadsheetPanel() {
         Spreadsheet spreadsheet = new Spreadsheet();
+        //enable editing
+        spreadsheet.setActiveSheetProtected(null);
+        spreadsheet.getActiveSheet().groupColumn(1, 200);
+        
         CellStyle backgroundColorStyle = spreadsheet.getWorkbook()
                 .createCellStyle();
         backgroundColorStyle.setFillBackgroundColor(HSSFColor.YELLOW.index);

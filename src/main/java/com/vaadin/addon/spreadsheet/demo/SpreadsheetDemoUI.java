@@ -38,6 +38,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -45,6 +46,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.Tree;
@@ -126,6 +129,16 @@ horizontalPanel.setSizeFull();
         panel.setSizeFull();
         panel.setStyleName("panel");
 
+        HorizontalLayout topBar=new HorizontalLayout();
+        topBar.setHeight("10");
+        Button editButton=new Button("EDIT");
+        editButton.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+//                updateSelectedCellsBold();
+            }
+        });
+        
         
         content.setSizeFull();
         content.addComponents( panel);

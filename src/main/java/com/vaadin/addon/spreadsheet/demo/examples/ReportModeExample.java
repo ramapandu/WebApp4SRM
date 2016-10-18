@@ -33,7 +33,7 @@ public class ReportModeExample implements SpreadsheetExample {
                 sampleFile = new File(resource.toURI());
                 spreadsheet = new Spreadsheet(sampleFile);
                 spreadsheet.setReportStyle(true);
-                spreadsheet.setActiveSheetProtected("");
+                spreadsheet.setActiveSheetProtected(null);
                 spreadsheet.setRowColHeadingsVisible(false);
             }
         } catch (IOException e) {
