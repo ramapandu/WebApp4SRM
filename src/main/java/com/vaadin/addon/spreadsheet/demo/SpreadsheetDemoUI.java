@@ -280,7 +280,7 @@ horizontalPanel.setSizeFull();
         Spreadsheet spreadsheet = FileExampleHelper.openFile(file);
         
      // Define the range
-        CellRangeAddress range =new CellRangeAddress(1, 7, 1, 4);
+        CellRangeAddress range =new CellRangeAddress(1, 200, 0, 52);
         
      // Create a table in the range
         SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
