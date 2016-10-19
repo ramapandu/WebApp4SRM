@@ -9,9 +9,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.util.CellRangeAddress;
 
+import com.google.gwt.thirdparty.javascript.jscomp.parsing.parser.trees.GetAccessorTree;
+import com.vaadin.addon.spreadsheet.ItemFilter;
+import com.vaadin.addon.spreadsheet.PopupButton;
 import com.vaadin.addon.spreadsheet.Spreadsheet;
+import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
+import com.vaadin.addon.spreadsheet.SpreadsheetTable;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -80,7 +87,43 @@ public class FileUploadExample implements SpreadsheetExample, Receiver,
         Spreadsheet spreadsheet = new Spreadsheet();
         //enable editing
         spreadsheet.setActiveSheetProtected(null);
-        spreadsheet.getActiveSheet().groupColumn(1, 200);
+        
+        
+//        spreadsheet.getActiveSheet().groupColumn(2, 200);
+//        com.vaadin.addon.spreadsheet.SpreadsheetFilterTable.class.
+     // Create a table in the region  
+//        CellRangeAddress range = new CellRangeAddress(1, 7, 1, 4);
+//        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet, range);
+//        com.vaadin.addon.spreadsheet.ItemFilter.
+////        spreadsheet.registerTable(table);
+        
+        
+        
+        
+        /////////////IMP----------------------------------
+//     // Define the range
+//        CellRangeAddress range =new CellRangeAddress(1, 7, 1, 4);
+//        
+//     // Create a table in the range
+//        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
+        
+        
+        
+        
+        
+        
+//        spreadsheet.registerTable(table);
+//        PopupButton button=table.getPopupButton(1);
+//      ItemFilter ifilter=new  ItemFilter(range,spreadsheet,button,table);
+        // Enable hiding each column
+//        for (int col = range.getFirstColumn();col <= range.getLastColumn(); col++) {
+//            final int c = col;
+//            table.getPopupButton(col).addComponent(
+//                new Button("Hide Column", e -> { // Java 8
+//                    sheet.setColumnHidden(c, true);
+//                    table.getPopupButton(c).closePopup();
+//                }));
+//        }      
         
         CellStyle backgroundColorStyle = spreadsheet.getWorkbook()
                 .createCellStyle();

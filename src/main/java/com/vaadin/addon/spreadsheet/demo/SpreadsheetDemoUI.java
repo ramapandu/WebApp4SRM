@@ -15,11 +15,13 @@ import java.util.Properties;
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.reflections.Reflections;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
+import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
 import com.vaadin.addon.spreadsheet.demo.examples.SpreadsheetExample;
 import com.vaadin.addon.spreadsheet.demo.helpers.FileExampleHelper;
 import com.vaadin.addon.spreadsheet.demo.helpers.NavigationBarHelper;
@@ -108,9 +110,7 @@ horizontalPanel.setSizeFull();
         VerticalLayout content = new VerticalLayout();
         content.setSpacing(true);
 
-       
-
-       
+        
         
 
         tree = new Tree();
@@ -278,6 +278,13 @@ horizontalPanel.setSizeFull();
 
     private void openFile(File file) {
         Spreadsheet spreadsheet = FileExampleHelper.openFile(file);
+        
+     // Define the range
+        CellRangeAddress range =new CellRangeAddress(1, 7, 1, 4);
+        
+     // Create a table in the range
+        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
+        table.getPopupButtons();
         tabSheet.addTab(spreadsheet, "Demo");
         
     }
