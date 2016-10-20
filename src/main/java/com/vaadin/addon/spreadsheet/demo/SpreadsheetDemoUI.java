@@ -1,6 +1,7 @@
 package com.vaadin.addon.spreadsheet.demo;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,13 +19,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.reflections.Reflections;
 
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
 import com.vaadin.addon.spreadsheet.demo.examples.SpreadsheetExample;
-import com.vaadin.addon.spreadsheet.demo.helpers.FileExampleHelper;
-import com.vaadin.addon.spreadsheet.demo.helpers.NavigationBarHelper;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -35,21 +33,17 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.FilesystemContainer;
 import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.Tree;
@@ -57,21 +51,15 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-/**
- * Demo class for the Spreadsheet component.
- * <p>
- * You can upload any xls or xlsx file using the upload component. You can also
- * place spreadsheet files on the classpath, under the folder /testsheets/, and
- * they will be picked up in a combobox in the menu.
- * 
- * 
- */
+
 @SuppressWarnings({ "serial", "rawtypes", "unchecked" })
 @JavaScript("prettify.js")
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
 public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
-
+	Spreadsheet spreadsheet;
+	HorizontalLayout topBar;
+	 Button saveButton;
     static final Properties prop = new Properties();
     static {
         try {
@@ -98,17 +86,16 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
         SpreadsheetFactory.logMemoryUsage();
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void init(VaadinRequest request) {
-        HorizontalLayout horizontalPanel = new HorizontalLayout();
-horizontalPanel.setSizeFull();
+        VerticalLayout verticalLayout = new VerticalLayout();
+verticalLayout.setSizeFull();
        
-        
+        setContent(verticalLayout);
 
-        setContent((Component) horizontalPanel);
-
-        VerticalLayout content = new VerticalLayout();
-        content.setSpacing(true);
+//        VerticalLayout content = new VerticalLayout();
+//        content.setSpacing(true);
 
         
         
@@ -124,25 +111,43 @@ horizontalPanel.setSizeFull();
         for (Object itemId : tree.rootItemIds()) {
             tree.expandItem(itemId);
         }
-        Panel panel = new Panel();
-        panel.setContent(tree);
-        panel.setSizeFull();
-        panel.setStyleName("panel");
+//        Panel panel = new Panel();
+//        panel.setContent(tree);
+//        panel.setSizeFull();
+//        panel.setStyleName("panel");
 
-        HorizontalLayout topBar=new HorizontalLayout();
-        topBar.setHeight("10");
-        Button editButton=new Button("EDIT");
-        editButton.addClickListener(new ClickListener() {
+        topBar=new HorizontalLayout();
+        topBar.setHeight("5%");
+        topBar.addStyleName("topbar");
+        saveButton=new Button("SAVE");
+        topBar.addComponent(saveButton);
+        saveButton.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-//                updateSelectedCellsBold();
+            	 
+            	           
+
+            	        File tempFile;
+						try {
+							tempFile = File.createTempFile("resultEmptyFile", "xlsx");
+							FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+							spreadsheet.write(tempOutputStream);
+							 tempOutputStream.close();
+		            	        tempFile.delete();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+            	        
+            	            
+
+//        
             }
         });
         
         
-        content.setSizeFull();
-        content.addComponents( panel);
-        content.setExpandRatio(panel, 1);
+//        content.setSizeFull();
+//        content.addComponents( topBar,panel);
+//        content.setExpandRatio(panel, 1);
 
 
         tabSheet = new TabSheet();
@@ -155,10 +160,14 @@ horizontalPanel.setSizeFull();
         });
         tabSheet.setSizeFull();
         tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
-        horizontalPanel.addComponent(tabSheet);
+        //NEED TO CHECK STYLES
+     verticalLayout.addComponent(topBar);
+        verticalLayout.addComponent(tabSheet);
 
         initSelection();
     }
+    
+    
 
     static String getVersion() {
         return (String) prop.get("spreadsheet.version");
@@ -241,14 +250,14 @@ horizontalPanel.setSizeFull();
         return examples;
     }
 
-    static String splitCamelCase(String s) {
-        String replaced = s.replaceAll(
-                String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])",
-                        "(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])"),
-                " ");
-        replaced = replaced.replaceAll("Example", "");
-        return replaced.trim();
-    }
+//    static String splitCamelCase(String s) {
+//        String replaced = s.replaceAll(
+//                String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])",
+//                        "(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])"),
+//                " ");
+//        replaced = replaced.replaceAll("Example", "");
+//        return replaced.trim();
+//    }
 
     @Override
     public void valueChange(ValueChangeEvent event) {
@@ -277,8 +286,15 @@ horizontalPanel.setSizeFull();
     }
 
     private void openFile(File file) {
-        Spreadsheet spreadsheet = FileExampleHelper.openFile(file);
+    	 // opens the specified file as a spreadsheet
+            spreadsheet = null;
+            try {
+                spreadsheet = new Spreadsheet(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         
+            
      // Define the range
         CellRangeAddress range =new CellRangeAddress(1, 200, 0, 52);
         
@@ -286,35 +302,37 @@ horizontalPanel.setSizeFull();
         SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
         table.getPopupButtons();
         tabSheet.addTab(spreadsheet, "Demo");
+       
         
     }
 
-    private void addResourceTab(Class clazz, String resourceName,
-            String tabName) {
-        try {
-            InputStream resourceAsStream = clazz
-                    .getResourceAsStream(resourceName);
-            String code = IOUtils.toString(resourceAsStream);
+//    private void addResourceTab(Class clazz, String resourceName,
+//            String tabName) {
+//        try {
+//            InputStream resourceAsStream = clazz
+//                    .getResourceAsStream(resourceName);
+//            String code = IOUtils.toString(resourceAsStream);
+//
+//            Panel p = getSourcePanel(code);
+//
+//            tabSheet.addTab(p, tabName);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-            Panel p = getSourcePanel(code);
+//    private Panel getSourcePanel(String code) {
+//        Panel p = new Panel();
+//        p.setWidth("100%");
+//        p.setStyleName(ValoTheme.PANEL_BORDERLESS);
+//        code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">",
+//                "&gt;");
+//        Label c = new Label("<pre class='prettyprint'>" + code + "</pre>");
+//        c.setContentMode(ContentMode.HTML);
+//        c.setSizeUndefined();
+//        p.setContent(c);
+//        return p;
+//    }
 
-            tabSheet.addTab(p, tabName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Panel getSourcePanel(String code) {
-        Panel p = new Panel();
-        p.setWidth("100%");
-        p.setStyleName(ValoTheme.PANEL_BORDERLESS);
-        code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">",
-                "&gt;");
-        Label c = new Label("<pre class='prettyprint'>" + code + "</pre>");
-        c.setContentMode(ContentMode.HTML);
-        c.setSizeUndefined();
-        p.setContent(c);
-        return p;
-    }
-
+    
 }

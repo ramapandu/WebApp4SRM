@@ -9,6 +9,7 @@ $v-gradient: false;
 
 @import "../valo/valo.scss";
 @import "prettify.scss";
+@import "mytheme.css";
 
 @mixin demo-theme {
   @include valo;
@@ -53,6 +54,11 @@ $v-gradient: false;
     &:before {
       content: "\00b7";
     }
+  }
+  
+   //topBar
+  topbar{
+  height:5%;
   }
 
   // Tree

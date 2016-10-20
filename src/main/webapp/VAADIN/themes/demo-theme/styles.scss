@@ -1,5 +1,6 @@
 @import "demo-theme.scss";
 @import "addons.scss";
+@import "mytheme.css";
 
 // This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
 // The actual styles should be defined in demo-theme.scss
@@ -7,4 +8,6 @@
 .demo-theme {
   @include addons;
   @include demo-theme;
+  
+ 
 }
