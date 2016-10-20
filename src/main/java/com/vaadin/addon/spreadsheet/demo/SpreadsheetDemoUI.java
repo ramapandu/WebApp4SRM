@@ -60,6 +60,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	Spreadsheet spreadsheet;
 	HorizontalLayout topBar;
 	 Button saveButton;
+	 File testSheetFile;
     static final Properties prop = new Properties();
     static {
         try {
@@ -98,23 +99,17 @@ verticalLayout.setSizeFull();
 //        content.setSpacing(true);
 
         
-        
-
-        tree = new Tree();
-        tree.setImmediate(true);
-        tree.setHtmlContentAllowed(true);
-        tree.setContainerDataSource(getContainer());
-        tree.setItemCaptionPropertyId("displayName");
-        tree.setNullSelectionAllowed(false);
-        tree.setWidth("100%");
-        tree.addValueChangeListener(this);
-        for (Object itemId : tree.rootItemIds()) {
-            tree.expandItem(itemId);
-        }
-//        Panel panel = new Panel();
-//        panel.setContent(tree);
-//        panel.setSizeFull();
-//        panel.setStyleName("panel");
+//        tree = new Tree();
+//        tree.setImmediate(true);
+//        tree.setHtmlContentAllowed(true);
+////        tree.setContainerDataSource(getContainer());
+//        tree.setItemCaptionPropertyId("displayName");
+//        tree.setNullSelectionAllowed(false);
+//        tree.setWidth("100%");
+//        tree.addValueChangeListener(this);
+//        for (Object itemId : tree.rootItemIds()) {
+//            tree.expandItem(itemId);
+//        }
 
         topBar=new HorizontalLayout();
         topBar.setHeight("5%");
@@ -125,31 +120,23 @@ verticalLayout.setSizeFull();
             @Override
             public void buttonClick(ClickEvent event) {
             	 
-            	           
 
             	        File tempFile;
 						try {
 							tempFile = File.createTempFile("resultEmptyFile", "xlsx");
+							
 							FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
 							spreadsheet.write(tempOutputStream);
-							 tempOutputStream.close();
-		            	        tempFile.delete();
+//							 tempOutputStream.close();
+//		            	        tempFile.delete();
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-            	        
-            	            
-
-//        
+               
             }
         });
         
         
-//        content.setSizeFull();
-//        content.addComponents( topBar,panel);
-//        content.setExpandRatio(panel, 1);
-
-
         tabSheet = new TabSheet();
         tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
             @Override
@@ -162,102 +149,37 @@ verticalLayout.setSizeFull();
         tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
         //NEED TO CHECK STYLES
      verticalLayout.addComponent(topBar);
+     try {
+		tabSheet.addComponent(openSheet());
+	} catch (URISyntaxException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
         verticalLayout.addComponent(tabSheet);
 
-        initSelection();
+      
     }
     
-    
+    public Spreadsheet openSheet()
+            throws URISyntaxException, IOException {
 
-    static String getVersion() {
-        return (String) prop.get("spreadsheet.version");
+    	URL testSheetResource = this.getClass().getClassLoader()
+                .getResource("SAP-DEAL.xlsx");
+        testSheetFile = new File(testSheetResource.toURI());
+        spreadsheet = new Spreadsheet(testSheetFile);
+
+        // no exceptions, everything ok
+        return spreadsheet;
     }
 
-    private void initSelection() {
-        Iterator<?> iterator = tree.getItemIds().iterator();
-        if (iterator.hasNext()) {
-            tree.select(iterator.next());
-        }
-    }
+   
 
-    
-    private Container getContainer() {
-        HierarchicalContainer hierarchicalContainer = new HierarchicalContainer();
-        hierarchicalContainer.addContainerProperty("order", Integer.class, 1);
-        hierarchicalContainer.addContainerProperty("displayName", String.class,
-                "");
-
-        Item fileItem;
-        Collection<File> files = getFiles();
-        for (File file : files) {
-            fileItem = hierarchicalContainer.addItem(file);
-            
-            hierarchicalContainer.setChildrenAllowed(file, false);
-        }
-
-        Item groupItem;
-        List<Class<? extends SpreadsheetExample>> examples = getExamples();
-        for (Class<? extends SpreadsheetExample> class1 : examples) {
-            
-            groupItem = hierarchicalContainer.addItem(class1);
-            
-            hierarchicalContainer.setChildrenAllowed(class1, false);
-        }
-
-        boolean[] ascending = { true, true };
-        hierarchicalContainer.sort(
-                hierarchicalContainer.getContainerPropertyIds().toArray(),
-                ascending);
-
-        return hierarchicalContainer;
-    }
-
-    private Collection<File> getFiles() {
-        File root = null;
-        try {
-            ClassLoader classLoader = SpreadsheetDemoUI.class.getClassLoader();
-            URL resource = classLoader
-                    .getResource("testsheets" + File.separator);
-            if (resource != null) {
-                root = new File(resource.toURI());
-            }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        FilesystemContainer testSheetContainer = new FilesystemContainer(root);
-        testSheetContainer.setRecursive(false);
-        testSheetContainer.setFilter(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                if (name != null
-                        && (name.endsWith(".xls") || name.endsWith(".xlsx"))) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-        return testSheetContainer.getItemIds();
-    }
-
-    private List<Class<? extends SpreadsheetExample>> getExamples() {
-        Reflections reflections = new Reflections(
-                "com.vaadin.addon.spreadsheet.demo.examples");
-        List<Class<? extends SpreadsheetExample>> examples = new ArrayList<Class<? extends SpreadsheetExample>>(
-                reflections.getSubTypesOf(SpreadsheetExample.class));
-        return examples;
-    }
-
-//    static String splitCamelCase(String s) {
-//        String replaced = s.replaceAll(
-//                String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])",
-//                        "(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])"),
-//                " ");
-//        replaced = replaced.replaceAll("Example", "");
-//        return replaced.trim();
+//	static String getVersion() {
+//        return (String) prop.get("spreadsheet.version");
 //    }
+
+
 
     @Override
     public void valueChange(ValueChangeEvent event) {
@@ -269,21 +191,20 @@ verticalLayout.setSizeFull();
         tabSheet.removeAllComponents();
         if (value instanceof File) {
             openFile((File) value);
-        } else if (value instanceof Class) {
-            openExample((Class) value);
-        }
+            
+        } 
     }
 
-    private void openExample(Class value) {
-        try {
-            SpreadsheetExample example = (SpreadsheetExample) value
-                    .newInstance();
-            tabSheet.addTab(example.getComponent(), "Demo");
-           
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void openExample(Class value) {
+//        try {
+//            SpreadsheetExample example = (SpreadsheetExample) value
+//                    .newInstance();
+//            tabSheet.addTab(example.getComponent(), "Demo");
+//           
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void openFile(File file) {
     	 // opens the specified file as a spreadsheet
