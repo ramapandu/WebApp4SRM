@@ -1,48 +1,33 @@
 package com.vaadin.addon.spreadsheet.demo;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.reflections.Reflections;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
-import com.vaadin.addon.spreadsheet.demo.examples.SpreadsheetExample;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.FilesystemContainer;
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -61,6 +46,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	HorizontalLayout topBar;
 	 Button saveButton;
 	 File testSheetFile;
+	 FileInputStream fisRead;
     static final Properties prop = new Properties();
     static {
         try {
@@ -124,11 +110,18 @@ verticalLayout.setSizeFull();
             	        File tempFile;
 						try {
 							tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-							
+						
 							FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
 							spreadsheet.write(tempOutputStream);
-//							 tempOutputStream.close();
+							 tempOutputStream.close();
+							 fisRead.close();
+							 
+							 FileOutputStream tempOutputStream1 = new FileOutputStream("SAP-DEAL.xlsx");
+							 FileInputStream fis=new FileInputStream(tempFile);
 //		            	        tempFile.delete();
+							 IOUtils.copy(fis,tempOutputStream1);
+							 fis.close();
+							 tempOutputStream1.close();
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
@@ -164,16 +157,21 @@ verticalLayout.setSizeFull();
     public Spreadsheet openSheet()
             throws URISyntaxException, IOException {
 
-    	URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("SAP-DEAL.xlsx");
-        testSheetFile = new File(testSheetResource.toURI());
-        spreadsheet = new Spreadsheet(testSheetFile);
-
+//    	URL testSheetResource = this.getClass().getClassLoader()
+//                .getResource("SAP-DEAL.xlsx");
+//    			testSheetFile = new File(testSheetResource.toURI());
+    	
+    	testSheetFile = new File("SAP-DEAL.xlsx");
+        fisRead=new FileInputStream(testSheetFile);
+        spreadsheet = new Spreadsheet(fisRead);
+        
         // no exceptions, everything ok
         return spreadsheet;
     }
 
-   
+   public Spreadsheet getExcelFile(){
+	   return spreadsheet;
+   }
 
 //	static String getVersion() {
 //        return (String) prop.get("spreadsheet.version");

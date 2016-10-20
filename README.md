@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Vaadin Spreadsheet demo
 
 Vaadin Spreadsheet demo showcases most of the functionality
@@ -21,3 +22,6 @@ for detailed instructions on obtaining and installing the license key.
   toolbar or by running the *vaadin:compile* goal with Maven.
 * Start the server by running *jetty:run* goal with Maven.
 * Open the URL *http://localhost:8080/spreadsheet* in a browser.
+=======
+# WebApp4SRM
+>>>>>>> 9432849ba799c68b912ecb7be194837cdacd2891
