@@ -2,47 +2,30 @@ package com.vaadin.addon.spreadsheet.demo;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.reflections.Reflections;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
-import com.vaadin.addon.spreadsheet.demo.examples.SpreadsheetExample;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.FilesystemContainer;
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -119,20 +102,22 @@ verticalLayout.setSizeFull();
         saveButton.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-            	 
+            	try {
+            		URL testSheetResource = this.getClass().getClassLoader()
+                            .getResource("testsheets/SAP-DEAL.xlsx");
+                   File testSheetFile1 = new File(testSheetResource.toURI());
+                    System.out.println(testSheetResource.toURI().toString());
+                    Spreadsheet sheet = new Spreadsheet(testSheetFile1);
 
-            	        File tempFile;
-						try {
-							tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-							
-							FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-							spreadsheet.write(tempOutputStream);
-//							 tempOutputStream.close();
-//		            	        tempFile.delete();
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-               
+                    File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
+                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+                    sheet.write(tempOutputStream);
+                    tempOutputStream.close();
+                    tempFile.delete();
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
             }
         });
         
@@ -165,10 +150,10 @@ verticalLayout.setSizeFull();
             throws URISyntaxException, IOException {
 
     	URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("SAP-DEAL.xlsx");
+                .getResource("testsheets/SAP-DEAL.xlsx");
         testSheetFile = new File(testSheetResource.toURI());
+        System.out.println(testSheetResource.toURI().toString());
         spreadsheet = new Spreadsheet(testSheetFile);
-
         // no exceptions, everything ok
         return spreadsheet;
     }
