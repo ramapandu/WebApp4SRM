@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
@@ -47,6 +48,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	HorizontalLayout topBar;
 	 Button saveButton;
 	 File testSheetFile;
+	 File tempFile;
     static final Properties prop = new Properties();
     static {
         try {
@@ -137,7 +139,7 @@ verticalLayout.setSizeFull();
             		 URL testSheetResource1 = this.getClass().getClassLoader()
             	                .getResource("testsheets/SAP-DEAL4.xlsx");
             			 System.out.println(testSheetResource1.toURI().toString());
-            			File tempFile = new File(testSheetResource1.toURI());
+            			tempFile = new File(testSheetResource1.toURI());
             	        
             	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
             	        spreadsheet.write(tempOutputStream);
@@ -146,7 +148,8 @@ verticalLayout.setSizeFull();
             	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
 //            	        System.out.println(sheet1.getCell("A4"));
             		//////-----------
-            	        
+            	        copyFile(tempFile,testSheetFile);
+            	        spreadsheet.setData(testSheetFile);
 				} catch (Exception e) {
 					// TODO: handle exception
 					e.printStackTrace();
@@ -184,14 +187,17 @@ verticalLayout.setSizeFull();
             throws URISyntaxException, IOException {
     	URL testSheetResource = this.getClass().getClassLoader()
                 .getResource("testsheets/SAP-DEAL1.xlsx");
-        File testSheetFile = new File(testSheetResource.toURI());
+       testSheetFile = new File(testSheetResource.toURI());
         System.out.println(testSheetResource.toURI().toString());
         spreadsheet = new Spreadsheet(testSheetFile);
         spreadsheet.getCell("A4").setCellValue("SAVE SUCCESS333");
         return spreadsheet;
     }
 
-   
+    private static void copyFile(File source, File dest)
+    		throws IOException {
+    	FileUtils.copyFile(source, dest);
+    }   
 
 //	static String getVersion() {
 //        return (String) prop.get("spreadsheet.version");
