@@ -3,6 +3,7 @@ package com.vaadin.addon.spreadsheet.demo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
@@ -40,6 +41,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
 public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
+	private static final long serialVersionUID = 1L;
+
 	Spreadsheet spreadsheet;
 	HorizontalLayout topBar;
 	 Button saveButton;
@@ -57,7 +60,8 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = SpreadsheetDemoUI.class, widgetset = "com.vaadin.addon.spreadsheet.demo.DemoWidgetSet")
-    public static class Servlet extends VaadinServlet {
+    public static class Servlet extends VaadinServlet implements Serializable {
+    	private static final long serialVersionUID = 1L;
     }
 
     private Tree tree;
@@ -73,6 +77,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
     @SuppressWarnings("deprecation")
 	@Override
     protected void init(VaadinRequest request) {
+    	
         VerticalLayout verticalLayout = new VerticalLayout();
 verticalLayout.setSizeFull();
        
@@ -100,20 +105,48 @@ verticalLayout.setSizeFull();
         saveButton=new Button("SAVE");
         topBar.addComponent(saveButton);
         saveButton.addClickListener(new ClickListener() {
+        	private static final long serialVersionUID = 1L;
             @Override
             public void buttonClick(ClickEvent event) {
             	try {
-            		URL testSheetResource = this.getClass().getClassLoader()
-                            .getResource("testsheets/SAP-DEAL.xlsx");
-                   File testSheetFile1 = new File(testSheetResource.toURI());
-                    System.out.println(testSheetResource.toURI().toString());
-                    Spreadsheet sheet = new Spreadsheet(testSheetFile1);
-
-                    File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-                    sheet.write(tempOutputStream);
-                    tempOutputStream.close();
-                    tempFile.delete();
+            		//TEST CASE---------------------------------
+//            		URL testSheetResource = this.getClass().getClassLoader()
+//                            .getResource("testsheets/SAP-DEAL.xlsx");
+//                   File testSheetFile1 = new File(testSheetResource.toURI());
+//                    System.out.println(testSheetResource.toURI().toString());
+//                    Spreadsheet sheet = new Spreadsheet(testSheetFile1);
+//
+//                    File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
+//                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//                    sheet.write(tempOutputStream);
+//                    tempOutputStream.close();
+//                    tempFile.delete();
+            		//---------------------------------
+//            		URL testSheetResource1 = this.getClass().getClassLoader()
+//                            .getResource("testsheets/SAP-DEAL4.xlsx");
+//            		 System.out.println(testSheetResource1.toURI().toString());
+//            		File tempFile = new File(testSheetResource1.toURI());
+//                    
+//                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//                    spreadsheet.write(tempOutputStream);
+//                    tempOutputStream.close();
+//                    Spreadsheet sheet1 = new Spreadsheet(tempFile);
+//                    System.out.println(sheet1.getCell("A4"));
+//                    tempFile.delete();
+            		//---------------------TEST2---begins
+            		 URL testSheetResource1 = this.getClass().getClassLoader()
+            	                .getResource("testsheets/SAP-DEAL4.xlsx");
+            			 System.out.println(testSheetResource1.toURI().toString());
+            			File tempFile = new File(testSheetResource1.toURI());
+            	        
+            	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+            	        spreadsheet.write(tempOutputStream);
+            	        tempOutputStream.flush();
+            	        tempOutputStream.close();
+            	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
+//            	        System.out.println(sheet1.getCell("A4"));
+            		//////-----------
+            	        
 				} catch (Exception e) {
 					// TODO: handle exception
 					e.printStackTrace();
@@ -136,6 +169,7 @@ verticalLayout.setSizeFull();
      verticalLayout.addComponent(topBar);
      try {
 		tabSheet.addComponent(openSheet());
+		
 	} catch (URISyntaxException e) {
 		e.printStackTrace();
 	} catch (IOException e) {
@@ -148,13 +182,12 @@ verticalLayout.setSizeFull();
     
     public Spreadsheet openSheet()
             throws URISyntaxException, IOException {
-
     	URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("testsheets/SAP-DEAL.xlsx");
-        testSheetFile = new File(testSheetResource.toURI());
+                .getResource("testsheets/SAP-DEAL1.xlsx");
+        File testSheetFile = new File(testSheetResource.toURI());
         System.out.println(testSheetResource.toURI().toString());
         spreadsheet = new Spreadsheet(testSheetFile);
-        // no exceptions, everything ok
+        spreadsheet.getCell("A4").setCellValue("SAVE SUCCESS333");
         return spreadsheet;
     }
 

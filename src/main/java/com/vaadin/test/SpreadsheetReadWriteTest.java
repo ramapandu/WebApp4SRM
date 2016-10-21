@@ -44,20 +44,43 @@ public class SpreadsheetReadWriteTest {
     @Test
     public void openAndSaveFile_emptyXLSXFile_openAndSaveWorks()
             throws URISyntaxException, IOException {
-        URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("SAP-DEAl3.xlsx");
-        File testSheetFIle = new File(testSheetResource.toURI());
-        Spreadsheet sheet = new Spreadsheet(testSheetFIle);
-        sheet.getCell("A4").setCellValue("TEST SUCCESS");
-//        System.out.println(sheet.getCell("A4"));
-        File tempFile = new File("SAP-DEAl3.xlsx");
+    	//----------
+    	Spreadsheet spreadsheet;
+    	URL testSheetResource = this.getClass().getClassLoader()
+                .getResource("testsheets/SAP-DEAL1.xlsx");
+        File testSheetFile = new File(testSheetResource.toURI());
+        System.out.println(testSheetResource.toURI().toString());
+        spreadsheet = new Spreadsheet(testSheetFile);
+        spreadsheet.getCell("A4").setCellValue("SAVE SUCCESS222");
+        // no exceptions, everything ok
+        //-----------
+        
+        URL testSheetResource1 = this.getClass().getClassLoader()
+                .getResource("testsheets/SAP-DEAL4.xlsx");
+		 System.out.println(testSheetResource1.toURI().toString());
+		File tempFile = new File(testSheetResource1.toURI());
         
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-        sheet.write(tempOutputStream);
+        spreadsheet.write(tempOutputStream);
         tempOutputStream.close();
         Spreadsheet sheet1 = new Spreadsheet(tempFile);
         System.out.println(sheet1.getCell("A4"));
-        tempFile.delete();
+//        tempFile.delete();
+    	//-------
+//        URL testSheetResource = this.getClass().getClassLoader()
+//                .getResource("SAP-DEAl3.xlsx");
+//        File testSheetFIle = new File(testSheetResource.toURI());
+//        Spreadsheet sheet = new Spreadsheet(testSheetFIle);
+//        sheet.getCell("A4").setCellValue("TEST SUCCESS");
+////        System.out.println(sheet.getCell("A4"));
+//        File tempFile = new File("SAP-DEAl3.xlsx");
+//        
+//        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//        sheet.write(tempOutputStream);
+//        tempOutputStream.close();
+//        Spreadsheet sheet1 = new Spreadsheet(tempFile);
+//        System.out.println(sheet1.getCell("A4"));
+//        tempFile.delete();
 
         // no exceptions, everything ok
     }
