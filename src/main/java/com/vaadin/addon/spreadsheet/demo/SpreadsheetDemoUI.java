@@ -85,22 +85,6 @@ verticalLayout.setSizeFull();
        
         setContent(verticalLayout);
 
-//        VerticalLayout content = new VerticalLayout();
-//        content.setSpacing(true);
-
-        
-//        tree = new Tree();
-//        tree.setImmediate(true);
-//        tree.setHtmlContentAllowed(true);
-////        tree.setContainerDataSource(getContainer());
-//        tree.setItemCaptionPropertyId("displayName");
-//        tree.setNullSelectionAllowed(false);
-//        tree.setWidth("100%");
-//        tree.addValueChangeListener(this);
-//        for (Object itemId : tree.rootItemIds()) {
-//            tree.expandItem(itemId);
-//        }
-
         topBar=new HorizontalLayout();
         topBar.setHeight("5%");
         topBar.addStyleName("topbar");
@@ -111,31 +95,7 @@ verticalLayout.setSizeFull();
             @Override
             public void buttonClick(ClickEvent event) {
             	try {
-            		//TEST CASE---------------------------------
-//            		URL testSheetResource = this.getClass().getClassLoader()
-//                            .getResource("testsheets/SAP-DEAL.xlsx");
-//                   File testSheetFile1 = new File(testSheetResource.toURI());
-//                    System.out.println(testSheetResource.toURI().toString());
-//                    Spreadsheet sheet = new Spreadsheet(testSheetFile1);
-//
-//                    File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-//                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-//                    sheet.write(tempOutputStream);
-//                    tempOutputStream.close();
-//                    tempFile.delete();
-            		//---------------------------------
-//            		URL testSheetResource1 = this.getClass().getClassLoader()
-//                            .getResource("testsheets/SAP-DEAL4.xlsx");
-//            		 System.out.println(testSheetResource1.toURI().toString());
-//            		File tempFile = new File(testSheetResource1.toURI());
-//                    
-//                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-//                    spreadsheet.write(tempOutputStream);
-//                    tempOutputStream.close();
-//                    Spreadsheet sheet1 = new Spreadsheet(tempFile);
-//                    System.out.println(sheet1.getCell("A4"));
-//                    tempFile.delete();
-            		//---------------------TEST2---begins
+            		
             		 URL testSheetResource1 = this.getClass().getClassLoader()
             	                .getResource("testsheets/SAP-DEAL4.xlsx");
             			 System.out.println(testSheetResource1.toURI().toString());
@@ -146,12 +106,9 @@ verticalLayout.setSizeFull();
             	        tempOutputStream.flush();
             	        tempOutputStream.close();
             	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
-//            	        System.out.println(sheet1.getCell("A4"));
-            		//////-----------
             	        copyFile(tempFile,testSheetFile);
             	        spreadsheet.setData(testSheetFile);
 				} catch (Exception e) {
-					// TODO: handle exception
 					e.printStackTrace();
 				}
             }
@@ -188,21 +145,27 @@ verticalLayout.setSizeFull();
     	URL testSheetResource = this.getClass().getClassLoader()
                 .getResource("testsheets/SAP-DEAL1.xlsx");
        testSheetFile = new File(testSheetResource.toURI());
-        System.out.println(testSheetResource.toURI().toString());
         spreadsheet = new Spreadsheet(testSheetFile);
-        spreadsheet.getCell("A4").setCellValue("SAVE SUCCESS333");
+      getPopUpButtons();
         return spreadsheet;
     }
 
-    private static void copyFile(File source, File dest)
+    private void getPopUpButtons() {
+    	for(int i=0;i<spreadsheet.getNumberOfSheets();i++){
+    		
+    	}
+    	 // Define the range
+        CellRangeAddress range =new CellRangeAddress(1, 200, 0, 52);
+        
+     // Create a table in the range
+        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
+        table.getPopupButtons();		
+	}
+
+	private static void copyFile(File source, File dest)
     		throws IOException {
     	FileUtils.copyFile(source, dest);
     }   
-
-//	static String getVersion() {
-//        return (String) prop.get("spreadsheet.version");
-//    }
-
 
 
     @Override
@@ -214,70 +177,9 @@ verticalLayout.setSizeFull();
     private void open(Object value) {
         tabSheet.removeAllComponents();
         if (value instanceof File) {
-            openFile((File) value);
+//            openFile((File) value);
             
         } 
     }
-
-//    private void openExample(Class value) {
-//        try {
-//            SpreadsheetExample example = (SpreadsheetExample) value
-//                    .newInstance();
-//            tabSheet.addTab(example.getComponent(), "Demo");
-//           
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-    private void openFile(File file) {
-    	 // opens the specified file as a spreadsheet
-            spreadsheet = null;
-            try {
-                spreadsheet = new Spreadsheet(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        
-            
-     // Define the range
-        CellRangeAddress range =new CellRangeAddress(1, 200, 0, 52);
-        
-     // Create a table in the range
-        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
-        table.getPopupButtons();
-        tabSheet.addTab(spreadsheet, "Demo");
-       
-        
-    }
-
-//    private void addResourceTab(Class clazz, String resourceName,
-//            String tabName) {
-//        try {
-//            InputStream resourceAsStream = clazz
-//                    .getResourceAsStream(resourceName);
-//            String code = IOUtils.toString(resourceAsStream);
-//
-//            Panel p = getSourcePanel(code);
-//
-//            tabSheet.addTab(p, tabName);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    private Panel getSourcePanel(String code) {
-//        Panel p = new Panel();
-//        p.setWidth("100%");
-//        p.setStyleName(ValoTheme.PANEL_BORDERLESS);
-//        code = code.replace("&", "&amp;").replace("<", "&lt;").replace(">",
-//                "&gt;");
-//        Label c = new Label("<pre class='prettyprint'>" + code + "</pre>");
-//        c.setContentMode(ContentMode.HTML);
-//        c.setSizeUndefined();
-//        p.setContent(c);
-//        return p;
-//    }
-
     
 }
