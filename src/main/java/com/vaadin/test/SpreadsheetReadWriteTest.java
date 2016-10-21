@@ -45,12 +45,12 @@ public class SpreadsheetReadWriteTest {
     public void openAndSaveFile_emptyXLSXFile_openAndSaveWorks()
             throws URISyntaxException, IOException {
         URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("SAP-DEAl2.xlsx");
+                .getResource("SAP-DEAl3.xlsx");
         File testSheetFIle = new File(testSheetResource.toURI());
         Spreadsheet sheet = new Spreadsheet(testSheetFIle);
         sheet.getCell("A4").setCellValue("TEST SUCCESS");
 //        System.out.println(sheet.getCell("A4"));
-        File tempFile = new File("SAP-DEAl2.xlsx");
+        File tempFile = new File("SAP-DEAl3.xlsx");
         
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
         sheet.write(tempOutputStream);
