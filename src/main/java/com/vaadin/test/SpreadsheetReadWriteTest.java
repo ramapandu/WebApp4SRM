@@ -45,18 +45,23 @@ public class SpreadsheetReadWriteTest {
     public void openAndSaveFile_emptyXLSXFile_openAndSaveWorks()
             throws URISyntaxException, IOException {
         URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("SAP-DEAl.xlsx");
+                .getResource("SAP-DEAl2.xlsx");
         File testSheetFIle = new File(testSheetResource.toURI());
         Spreadsheet sheet = new Spreadsheet(testSheetFIle);
-
-        File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
+        sheet.getCell("A4").setCellValue("TEST SUCCESS");
+//        System.out.println(sheet.getCell("A4"));
+        File tempFile = new File("SAP-DEAl2.xlsx");
+        
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
         sheet.write(tempOutputStream);
         tempOutputStream.close();
+        Spreadsheet sheet1 = new Spreadsheet(tempFile);
+        System.out.println(sheet1.getCell("A4"));
         tempFile.delete();
 
         // no exceptions, everything ok
     }
+
 
     @Test
     public void openAndSaveFile_emptyXLSXFile_FileDoesNotContainAdditionalDrawing()
