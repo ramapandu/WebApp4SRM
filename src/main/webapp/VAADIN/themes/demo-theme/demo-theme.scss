@@ -9,13 +9,14 @@ $v-gradient: false;
 
 @import "../valo/valo.scss";
 @import "prettify.scss";
-@import "mytheme.css";
+
 
 @mixin demo-theme {
   @include valo;
 
   // Include SplitPanel styles manually (avoid any excess output and also modify the splitter size)
   @include valo-splitpanel-global;
+
 
   .v-splitpanel-horizontal {
     @include valo-splitpanel-style($orientation: horizontal, $splitter-size: 0);
@@ -57,8 +58,15 @@ $v-gradient: false;
   }
   
    //topBar
-  topbar{
-  height:5%;
+  .topbar{
+  padding-top: 15px;
+  height:15%;
+  width:100%;
+  }
+  
+  .sheetlayout{
+  height:80%;
+  width:100%;
   }
 
   // Tree

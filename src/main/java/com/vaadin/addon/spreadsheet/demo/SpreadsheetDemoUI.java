@@ -11,15 +11,19 @@ import java.util.Properties;
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.hslf.model.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
+import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeEvent;
+import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.client.metadata.OnStateChangeMethod;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.VaadinRequest;
@@ -44,8 +48,10 @@ import com.vaadin.ui.themes.ValoTheme;
 public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	private static final long serialVersionUID = 1L;
 
+	 private SheetChangeListener selectedSheetChangeListener;
+	 VerticalLayout rootLayout;
 	Spreadsheet spreadsheet;
-	HorizontalLayout topBar;
+	HorizontalLayout topBar,sheetLayout;
 	 Button saveButton;
 	 File testSheetFile;
 	 File tempFile;
@@ -80,99 +86,144 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	@Override
     protected void init(VaadinRequest request) {
     	
-        VerticalLayout verticalLayout = new VerticalLayout();
-verticalLayout.setSizeFull();
-       
-        setContent(verticalLayout);
+    	rootLayout = new VerticalLayout();
+//    	rootLayout.setSizeFull();
+        setContent(rootLayout);
+        CreateUI();
 
-        topBar=new HorizontalLayout();
-        topBar.setHeight("5%");
-        topBar.addStyleName("topbar");
-        saveButton=new Button("SAVE");
-        topBar.addComponent(saveButton);
-        saveButton.addClickListener(new ClickListener() {
-        	private static final long serialVersionUID = 1L;
-            @Override
-            public void buttonClick(ClickEvent event) {
-            	try {
-            		
-            		 URL testSheetResource1 = this.getClass().getClassLoader()
-            	                .getResource("testsheets/SAP-DEAL4.xlsx");
-            			 System.out.println(testSheetResource1.toURI().toString());
-            			tempFile = new File(testSheetResource1.toURI());
-            	        
-            	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-            	        spreadsheet.write(tempOutputStream);
-            	        tempOutputStream.flush();
-            	        tempOutputStream.close();
-            	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
-            	        copyFile(tempFile,testSheetFile);
-            	        spreadsheet.setData(testSheetFile);
+    }
+    
+    private void CreateUI() {
+    	rootLayout.addComponent(getTopBar());
+    	rootLayout.addComponent(getSheetLayout());
+	}
+    
+    public HorizontalLayout getSheetLayout(){
+    	sheetLayout=new HorizontalLayout();
+    	sheetLayout.setSizeFull();
+    	sheetLayout.setHeight("100%");
+    	sheetLayout.addComponent(getTabSheet());
+    	sheetLayout.addStyleName("sheetlayout");
+    	return sheetLayout;
+    }
+
+	private HorizontalLayout getTopBar() {
+	      topBar=new HorizontalLayout();
+	      topBar.setPrimaryStyleName("topbar");
+	      topBar.addComponent(getSaveButton());
+	      return topBar;
+	}
+
+	private TabSheet getTabSheet() {
+		tabSheet = new TabSheet();
+		
+	      tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+	          @Override
+	          public void selectedTabChange(SelectedTabChangeEvent event) {
+	              com.vaadin.ui.JavaScript
+	                      .eval("setTimeout(function(){prettyPrint();},300);");
+	          }
+	      });
+	      tabSheet.setSizeFull();
+	      	      tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
+	      //NEED TO CHECK STYLES
+	//   verticalLayout.addComponent(topBar);
+	   try {
+			tabSheet.addComponent(openSheet());
+			
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	   
+		return tabSheet;
+		}		
+	
+
+	private Button getSaveButton() {
+		saveButton=new Button("SAVE");
+      saveButton.addClickListener(new ClickListener() {
+      	private static final long serialVersionUID = 1L;
+          @Override
+          public void buttonClick(ClickEvent event) {
+          	try {
+          		
+          		 URL testSheetResource1 = this.getClass().getClassLoader()
+          	                .getResource("testsheets/SAP-DEAL4.xlsx");
+          			 System.out.println(testSheetResource1.toURI().toString());
+          			tempFile = new File(testSheetResource1.toURI());
+          	        
+          	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+          	        spreadsheet.write(tempOutputStream);
+          	        tempOutputStream.flush();
+          	        tempOutputStream.close();
+          	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
+          	        copyFile(tempFile,testSheetFile);
+          	        spreadsheet.setData(testSheetFile);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-            }
-        });
-        
-        
-        tabSheet = new TabSheet();
-        tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-            @Override
-            public void selectedTabChange(SelectedTabChangeEvent event) {
-                com.vaadin.ui.JavaScript
-                        .eval("setTimeout(function(){prettyPrint();},300);");
-            }
-        });
-        tabSheet.setSizeFull();
-        tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
-        //NEED TO CHECK STYLES
-     verticalLayout.addComponent(topBar);
-     try {
-		tabSheet.addComponent(openSheet());
-		
-	} catch (URISyntaxException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
+          }
+      });	
+      return saveButton;
 	}
-        verticalLayout.addComponent(tabSheet);
 
-      
-    }
-    
-    public Spreadsheet openSheet()
+	public Spreadsheet openSheet()
             throws URISyntaxException, IOException {
     	URL testSheetResource = this.getClass().getClassLoader()
                 .getResource("testsheets/SAP-DEAL1.xlsx");
        testSheetFile = new File(testSheetResource.toURI());
         spreadsheet = new Spreadsheet(testSheetFile);
-      getPopUpButtons();
+//      getPopUpButtons();
+        getPopUpButtonsForAllSheets();
+//        spreadsheet.addListener(new SheetChangeListener(selectedSheetChangeListener));
+//        selectedSheetChangeListener = new SheetChangeListener() {
+//            @Override
+//            public void onSheetChange(SheetChangeEvent event) {
+//           getPopUpButtons();     
+//            }
+//	   };
         return spreadsheet;
     }
 
     private void getPopUpButtons() {
-    	for(int i=0;i<spreadsheet.getNumberOfSheets();i++){
-    		
-    	}
     	 // Define the range
         CellRangeAddress range =new CellRangeAddress(1, 200, 0, 52);
         
      // Create a table in the range
         SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
-        table.getPopupButtons();		
+//        table.getPopupButtons();
+//        table.getSheet().
 	}
 
 	private static void copyFile(File source, File dest)
     		throws IOException {
     	FileUtils.copyFile(source, dest);
     }   
-
+public void getPopUpButtonsForAllSheets(){
+	for(int i=0;i<spreadsheet.getNumberOfSheets();i++){
+//		Sheet s=(Sheet) spreadsheet.getWorkbook().getSheetAt(i);
+		spreadsheet.getWorkbook().getSheetAt(i);
+		getPopUpButtons();
+	}
+}
 
     @Override
     public void valueChange(ValueChangeEvent event) {
+    	spreadsheet.addSheetChangeListener(selectedSheetChangeListener);
+        selectedSheetChangeListener = new SheetChangeListener() {
+            @Override
+            public void onSheetChange(SheetChangeEvent event) {
+           getPopUpButtons();     
+            }
+	   };
         Object value = event.getProperty().getValue();
         open(value);
+        getPopUpButtons();
     }
+    
+   
 
     private void open(Object value) {
         tabSheet.removeAllComponents();
