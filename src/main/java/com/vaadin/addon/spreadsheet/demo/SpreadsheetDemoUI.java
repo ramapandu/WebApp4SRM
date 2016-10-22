@@ -11,7 +11,6 @@ import java.util.Properties;
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.hslf.model.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
@@ -23,9 +22,10 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.client.metadata.OnStateChangeMethod;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
@@ -52,7 +52,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	 VerticalLayout rootLayout;
 	Spreadsheet spreadsheet;
 	HorizontalLayout topBar,sheetLayout;
-	 Button saveButton;
+	 Button editButton,saveButton,downlaodButton;
 	 File testSheetFile;
 	 File tempFile;
     static final Properties prop = new Properties();
@@ -110,7 +110,9 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	private HorizontalLayout getTopBar() {
 	      topBar=new HorizontalLayout();
 	      topBar.setPrimaryStyleName("topbar");
+	      topBar.addComponent(getEditButton());
 	      topBar.addComponent(getSaveButton());
+	      topBar.addComponent(getDownloadButton());
 	      return topBar;
 	}
 
@@ -126,8 +128,6 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	      });
 	      tabSheet.setSizeFull();
 	      	      tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
-	      //NEED TO CHECK STYLES
-	//   verticalLayout.addComponent(topBar);
 	   try {
 			tabSheet.addComponent(openSheet());
 			
@@ -141,8 +141,38 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 		}		
 	
 
+	private Button getDownloadButton() {
+		downlaodButton=new Button("DOWNLOAD");
+		downlaodButton.addStyleName("topbarbuttons");
+		downlaodButton.addClickListener(new ClickListener() {
+      	private static final long serialVersionUID = 1L;
+          @Override
+          public void buttonClick(ClickEvent event) {
+        	  FileResource resource = new FileResource(testSheetFile);
+              FileDownloader fileDownloader = new FileDownloader(
+                      resource);
+              fileDownloader.extend(downlaodButton);
+          }
+      });	
+      return downlaodButton;
+	}
+	
+	private Button getEditButton() {
+		editButton=new Button("EDIT");
+		editButton.addStyleName("topbarbuttons");
+		editButton.addClickListener(new ClickListener() {
+      	private static final long serialVersionUID = 1L;
+          @Override
+          public void buttonClick(ClickEvent event) {
+          enableEdit();
+          }
+      });	
+      return editButton;
+	}
+
 	private Button getSaveButton() {
 		saveButton=new Button("SAVE");
+		saveButton.addStyleName("topbarbuttons");
       saveButton.addClickListener(new ClickListener() {
       	private static final long serialVersionUID = 1L;
           @Override
@@ -168,7 +198,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
       });	
       return saveButton;
 	}
-
+	
 	public Spreadsheet openSheet()
             throws URISyntaxException, IOException {
     	URL testSheetResource = this.getClass().getClassLoader()
@@ -223,7 +253,10 @@ public void getPopUpButtonsForAllSheets(){
         getPopUpButtons();
     }
     
-   
+   public void enableEdit(){
+//	   if(editButton.isEnabled())
+// spreadsheet.setActiveSheetProtected(null);
+   }
 
     private void open(Object value) {
         tabSheet.removeAllComponents();
