@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
@@ -28,6 +31,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -45,7 +49,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @JavaScript("prettify.js")
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
-public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
+public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Serializable {
 	private static final long serialVersionUID = 1L;
 
 	 private SheetChangeListener selectedSheetChangeListener;
@@ -90,7 +94,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 //    	rootLayout.setSizeFull();
         setContent(rootLayout);
         CreateUI();
-
+        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
     }
     
     private void CreateUI() {
@@ -186,11 +190,12 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
           	        
           	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
           	        spreadsheet.write(tempOutputStream);
-          	        tempOutputStream.flush();
+//          	        tempOutputStream.flush();
           	        tempOutputStream.close();
           	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
           	        copyFile(tempFile,testSheetFile);
           	        spreadsheet.setData(testSheetFile);
+//          	        spreadsheet.reload();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -214,15 +219,42 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 //           getPopUpButtons();     
 //            }
 //	   };
+        
+        spreadsheet.addSheetChangeListener(new SheetChangeListener(){
+        
+		@Override
+		public void onSheetChange(SheetChangeEvent event) {
+getPopUpButtons(spreadsheet.getActiveSheet());			
+		}
+    });
         return spreadsheet;
     }
 
-    private void getPopUpButtons() {
+    private void getPopUpButtons(Sheet sheet) {
+//    	 Row r = sheet.getRow(sheet.getFirstRowNum());
+//    	 int lastColumnNum=0;
+//    	 lastColumnNum=  r.getLastCellNum();
+    	//OR Cell lastCellInRow = row.getCell(row.getLastCellNum() - 1);
+    	//------------------
+//    	int numberOfCells = 0;
+//        Iterator rowIterator = sheet.rowIterator();
+//        /**
+//         * Escape the header row *
+//         */
+//        if (rowIterator.hasNext())
+//        {
+//            Row headerRow = (Row) rowIterator.next();
+//            //get the number of cells in the header row
+//            numberOfCells = headerRow.getPhysicalNumberOfCells();
+//        }
+//        System.out.println(sheet.getFirstRowNum()+""+sheet.getLastRowNum()+""+1+""+numberOfCells);
+//    	 CellRangeAddress range =new CellRangeAddress(sheet.getFirstRowNum(),sheet.getLastRowNum(),1,numberOfCells); 
+        //--------------
+    	
     	 // Define the range
-        CellRangeAddress range =new CellRangeAddress(1, 200, 0, 52);
-        
+        CellRangeAddress range =new CellRangeAddress(1,300,0,52);  
      // Create a table in the range
-        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,range);
+        SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,sheet,range);
 //        table.getPopupButtons();
 //        table.getSheet().
 	}
@@ -234,23 +266,24 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 public void getPopUpButtonsForAllSheets(){
 	for(int i=0;i<spreadsheet.getNumberOfSheets();i++){
 //		Sheet s=(Sheet) spreadsheet.getWorkbook().getSheetAt(i);
-		spreadsheet.getWorkbook().getSheetAt(i);
-		getPopUpButtons();
+		Sheet s=spreadsheet.getWorkbook().getSheetAt(i);
+		getPopUpButtons(s);
 	}
 }
 
     @Override
     public void valueChange(ValueChangeEvent event) {
-    	spreadsheet.addSheetChangeListener(selectedSheetChangeListener);
-        selectedSheetChangeListener = new SheetChangeListener() {
-            @Override
-            public void onSheetChange(SheetChangeEvent event) {
-           getPopUpButtons();     
-            }
-	   };
-        Object value = event.getProperty().getValue();
-        open(value);
-        getPopUpButtons();
+//    	spreadsheet.addSheetChangeListener(selectedSheetChangeListener);
+//        selectedSheetChangeListener = new SheetChangeListener() {
+//            @Override
+//            public void onSheetChange(SheetChangeEvent event) {
+////           getPopUpButtons();     
+//            getPopUpButtons(spreadsheet.getActiveSheet());
+//            }
+//	   };
+//        Object value = event.getProperty().getValue();
+//        open(value);
+////        getPopUpButtons();
     }
     
    public void enableEdit(){
