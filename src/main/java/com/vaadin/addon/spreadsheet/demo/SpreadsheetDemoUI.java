@@ -19,6 +19,7 @@ import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
 import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -46,9 +47,11 @@ import com.vaadin.ui.themes.ValoTheme;
 @JavaScript("prettify.js")
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
-public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Serializable {
-	private static final long serialVersionUID = 1L;
-
+@SuppressWarnings({ "serial", "rawtypes", "unchecked" })
+public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
+	
+	private static final long serialVersionUID = -2636301182919370995L;
+//	private volatile VaadinSession session; 
 	 CellRangeAddress range;
 	 VerticalLayout rootLayout;
 	Spreadsheet spreadsheet;
@@ -69,7 +72,8 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = SpreadsheetDemoUI.class, widgetset = "com.vaadin.addon.spreadsheet.demo.DemoWidgetSet")
-    public static class Servlet extends VaadinServlet implements Serializable {
+    @PreserveOnRefresh
+    public static class Servlet extends VaadinServlet  {
 
 	
 	private static final long serialVersionUID = -7814001723142929438L;
@@ -83,7 +87,6 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
     public SpreadsheetDemoUI() {
     	
         super();
-
         setSizeFull();
         SpreadsheetFactory.logMemoryUsage();
     }
@@ -91,38 +94,59 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
     @Override
     protected void init(VaadinRequest request) {
        
-    	 VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
-    	 //ERROR HANDLING
-    	 UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
-            
-			private static final long serialVersionUID = 1L;
-
-			@Override
-             public void error(com.vaadin.server.ErrorEvent event) {
-                 for (Throwable t = event.getThrowable(); t != null;
-                      t = t.getCause())
-                     if (t.getCause() == null) {
-					}
-
-                 
-                 // Do the default error handling (optional)
-                 doDefault(event);
-             }
-         });
+    	
+    	 
+//    	try {
+//    	    VaadinSession.getCurrent().getLockInstance().lock();
+////    	    VaadinSession.getCurrent().setAttribute(SESSION_SCOPED_VALUE_ID, "some value");
+//    	} finally {
+//    	    VaadinSession.getCurrent().getLockInstance().unlock();
+//    	}
     	 
     	rootLayout = new VerticalLayout();
 //    	rootLayout.setSizeFull();
         setContent(rootLayout);
+//        this.getSession();
         CreateUI();
        
     }
-    
+   
+       
+//    @Override 
+//    public VaadinSession getSession() { 
+//        return session; 
+//    } 
 
-    
+
+
     private void CreateUI() {
+    	VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
+//   	 //ERROR HANDLING
+//   	 UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
+//           
+//			private static final long serialVersionUID = -3126794520568953795L;
+//
+//			@Override
+//            public void error(com.vaadin.server.ErrorEvent event) {
+//                for (Throwable t = event.getThrowable(); t != null;
+//                     t = t.getCause())
+//                    if (t.getCause() == null) {
+//					}
+//
+//                
+//                // Do the default error handling (optional)
+//                doDefault(event);
+//            }
+//        });
+   	 
     	rootLayout.addComponent(getTopBar());
     	rootLayout.addComponent(getSheetLayout());
 	}
+    
+//    @Override 
+//    public UI getUI() { 
+//        return this; 
+//    } 
     
     public HorizontalLayout getSheetLayout(){
     	sheetLayout=new HorizontalLayout();
@@ -145,16 +169,17 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
 	private TabSheet getTabSheet() {
 		tabSheet = new TabSheet();
 		
-	      tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-	         
-			private static final long serialVersionUID = 1L;
-
-			@Override
-	          public void selectedTabChange(SelectedTabChangeEvent event) {
-	              com.vaadin.ui.JavaScript
-	                      .eval("setTimeout(function(){prettyPrint();},300);");
-	          }
-	      });
+//	      tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+//	         
+//			
+//				private static final long serialVersionUID = -1698363226401049948L;
+//
+//			@Override
+//	          public void selectedTabChange(SelectedTabChangeEvent event) {
+//	              com.vaadin.ui.JavaScript
+//	                      .eval("setTimeout(function(){prettyPrint();},300);");
+//	          }
+//	      });
 	      tabSheet.setSizeFull();
 	      	      tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 	   try {
@@ -174,8 +199,11 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
 		downlaodButton=new Button("DOWNLOAD");
 		downlaodButton.addStyleName("topbarbuttons");
 		downlaodButton.addClickListener(new ClickListener() {
-      	private static final long serialVersionUID = 1L;
-          @Override
+      	
+         
+			private static final long serialVersionUID = -8158301975694183254L;
+
+		@Override
           public void buttonClick(ClickEvent event) {
         	  FileResource resource = new FileResource(testSheetFile);
               FileDownloader fileDownloader = new FileDownloader(
@@ -190,8 +218,13 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
 		editButton=new Button("EDIT");
 		editButton.addStyleName("topbarbuttons");
 		editButton.addClickListener(new ClickListener() {
-      	private static final long serialVersionUID = 1L;
-          @Override
+      	
+          /**
+			 * 
+			 */
+			private static final long serialVersionUID = 483869047651452271L;
+
+		@Override
           public void buttonClick(ClickEvent event) {
           enableEdit();
           }
@@ -203,8 +236,13 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
 		saveButton=new Button("SAVE");
 		saveButton.addStyleName("topbarbuttons");
       saveButton.addClickListener(new ClickListener() {
-      	private static final long serialVersionUID = 1L;
-          @Override
+      	
+          /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1792550832130526578L;
+
+		@Override
           public void buttonClick(ClickEvent event) {
           	try {
           		
@@ -215,11 +253,12 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
           	        
           	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
           	        spreadsheet.write(tempOutputStream);
-//          	        tempOutputStream.flush();
-          	        tempOutputStream.close();
+          	        tempOutputStream.flush();
+          	        tempOutputStream.close(); 
 //          	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
+          	      spreadsheet= new Spreadsheet(tempFile);
           	        copyFile(tempFile,testSheetFile);
-          	        spreadsheet.setData(testSheetFile);
+//          	        spreadsheet.setData(testSheetFile);
 //          	      spreadsheet.setData(sheet1);
           	   
 //          	        spreadsheet.reload();
@@ -242,7 +281,12 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
         
         spreadsheet.addSheetChangeListener(new SheetChangeListener(){
         
-					private static final long serialVersionUID = 1L;
+					
+
+		/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5585430837302587763L;
 
 		@Override
 		public void onSheetChange(SheetChangeEvent event) {
@@ -253,7 +297,9 @@ getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
         return spreadsheet;
     }
 
-    private void getPopUpButtonsForSheet(Sheet sheet)throws NullPointerException,ArrayIndexOutOfBoundsException {
+    public void getPopUpButtonsForSheet(Sheet sheet) throws NullPointerException,ArrayIndexOutOfBoundsException  {
+    	
+    	
     	try{
 //    	 Row r = sheet.getRow(sheet.getFirstRowNum());
 //    	 int lastColumnNum=0;
@@ -276,7 +322,7 @@ getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
         //--------------
     	
     	 // Define the range
-        range =new CellRangeAddress(0,300,0,52);  
+        range =new CellRangeAddress(0,10,0,10);  
         System.out.println(sheet.getFirstRowNum()+""+sheet.getLastRowNum()+""+1);
      // Create a table in the range
         SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,sheet,range);
@@ -303,25 +349,31 @@ public void getPopUpButtonsForAllSheets(){
 	}
 }
 
-    @Override
-    public void valueChange(ValueChangeEvent event) {
-//    	spreadsheet.addSheetChangeListener(selectedSheetChangeListener);
-//        selectedSheetChangeListener = new SheetChangeListener() {
-//            @Override
-//            public void onSheetChange(SheetChangeEvent event) {
-////           getPopUpButtons();     
-//            getPopUpButtons(spreadsheet.getActiveSheet());
-//            }
-//	   };
-//        Object value = event.getProperty().getValue();
-//        open(value);
-////        getPopUpButtons();
-    }
+//    @Override
+//    public void valueChange(ValueChangeEvent event) {
+////    	spreadsheet.addSheetChangeListener(selectedSheetChangeListener);
+////        selectedSheetChangeListener = new SheetChangeListener() {
+////            @Override
+////            public void onSheetChange(SheetChangeEvent event) {
+//////           getPopUpButtons();     
+////            getPopUpButtons(spreadsheet.getActiveSheet());
+////            }
+////	   };
+////        Object value = event.getProperty().getValue();
+////        open(value);
+//////        getPopUpButtons();
+//    }
     
    public void enableEdit(){
 //	   if(editButton.isEnabled())
 // spreadsheet.setActiveSheetProtected(null);
    }
+
+@Override
+public void valueChange(ValueChangeEvent event) {
+	// TODO Auto-generated method stub
+	
+}
 
 //    private void open(Object value) {
 //        tabSheet.removeAllComponents();
