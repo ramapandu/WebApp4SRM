@@ -6,13 +6,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
@@ -27,6 +24,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
@@ -39,63 +37,87 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 
-@SuppressWarnings({ "serial", "rawtypes", "unchecked" })
+
 @JavaScript("prettify.js")
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
 public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Serializable {
 	private static final long serialVersionUID = 1L;
 
-	 private SheetChangeListener selectedSheetChangeListener;
+	 CellRangeAddress range;
 	 VerticalLayout rootLayout;
 	Spreadsheet spreadsheet;
 	HorizontalLayout topBar,sheetLayout;
 	 Button editButton,saveButton,downlaodButton;
 	 File testSheetFile;
 	 File tempFile;
-    static final Properties prop = new Properties();
-    static {
-        try {
-            // load a properties file
-            prop.load(SpreadsheetDemoUI.class
-                    .getResourceAsStream("config.properties"));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+//    static final Properties prop = new Properties();
+//    static {
+//        try {
+//            // load a properties file
+//            prop.load(SpreadsheetDemoUI.class
+//                    .getResourceAsStream("config.properties"));
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = SpreadsheetDemoUI.class, widgetset = "com.vaadin.addon.spreadsheet.demo.DemoWidgetSet")
     public static class Servlet extends VaadinServlet implements Serializable {
-    	private static final long serialVersionUID = 1L;
+
+	
+	private static final long serialVersionUID = -7814001723142929438L;
+    	
     }
 
-    private Tree tree;
+//    private Tree tree;
     private TabSheet tabSheet;
   
 
     public SpreadsheetDemoUI() {
+    	
         super();
+
         setSizeFull();
         SpreadsheetFactory.logMemoryUsage();
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     protected void init(VaadinRequest request) {
-    	
+       
+    	 VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
+    	 //ERROR HANDLING
+    	 UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
+            
+			private static final long serialVersionUID = 1L;
+
+			@Override
+             public void error(com.vaadin.server.ErrorEvent event) {
+                 for (Throwable t = event.getThrowable(); t != null;
+                      t = t.getCause())
+                     if (t.getCause() == null) {
+					}
+
+                 
+                 // Do the default error handling (optional)
+                 doDefault(event);
+             }
+         });
+    	 
     	rootLayout = new VerticalLayout();
 //    	rootLayout.setSizeFull();
         setContent(rootLayout);
         CreateUI();
-        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
+       
     }
+    
+
     
     private void CreateUI() {
     	rootLayout.addComponent(getTopBar());
@@ -124,7 +146,10 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
 		tabSheet = new TabSheet();
 		
 	      tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-	          @Override
+	         
+			private static final long serialVersionUID = 1L;
+
+			@Override
 	          public void selectedTabChange(SelectedTabChangeEvent event) {
 	              com.vaadin.ui.JavaScript
 	                      .eval("setTimeout(function(){prettyPrint();},300);");
@@ -192,9 +217,11 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
           	        spreadsheet.write(tempOutputStream);
 //          	        tempOutputStream.flush();
           	        tempOutputStream.close();
-          	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
+//          	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
           	        copyFile(tempFile,testSheetFile);
           	        spreadsheet.setData(testSheetFile);
+//          	      spreadsheet.setData(sheet1);
+          	   
 //          	        spreadsheet.reload();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -210,27 +237,24 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Seriali
                 .getResource("testsheets/SAP-DEAL1.xlsx");
        testSheetFile = new File(testSheetResource.toURI());
         spreadsheet = new Spreadsheet(testSheetFile);
-//      getPopUpButtons();
-        getPopUpButtonsForAllSheets();
-//        spreadsheet.addListener(new SheetChangeListener(selectedSheetChangeListener));
-//        selectedSheetChangeListener = new SheetChangeListener() {
-//            @Override
-//            public void onSheetChange(SheetChangeEvent event) {
-//           getPopUpButtons();     
-//            }
-//	   };
+      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
+//        getPopUpButtonsForAllSheets();
         
         spreadsheet.addSheetChangeListener(new SheetChangeListener(){
         
+					private static final long serialVersionUID = 1L;
+
 		@Override
 		public void onSheetChange(SheetChangeEvent event) {
-getPopUpButtons(spreadsheet.getActiveSheet());			
+getPopUpButtonsForSheet(spreadsheet.getActiveSheet());		
+
 		}
     });
         return spreadsheet;
     }
 
-    private void getPopUpButtons(Sheet sheet) {
+    private void getPopUpButtonsForSheet(Sheet sheet)throws NullPointerException,ArrayIndexOutOfBoundsException {
+    	try{
 //    	 Row r = sheet.getRow(sheet.getFirstRowNum());
 //    	 int lastColumnNum=0;
 //    	 lastColumnNum=  r.getLastCellNum();
@@ -252,11 +276,19 @@ getPopUpButtons(spreadsheet.getActiveSheet());
         //--------------
     	
     	 // Define the range
-        CellRangeAddress range =new CellRangeAddress(1,300,0,52);  
+        range =new CellRangeAddress(0,300,0,52);  
+        System.out.println(sheet.getFirstRowNum()+""+sheet.getLastRowNum()+""+1);
      // Create a table in the range
         SpreadsheetFilterTable table = new SpreadsheetFilterTable(spreadsheet,sheet,range);
-//        table.getPopupButtons();
+        table.getPopupButtons();
 //        table.getSheet().
+        
+        
+        
+    	}
+    	catch (ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void copyFile(File source, File dest)
@@ -267,7 +299,7 @@ public void getPopUpButtonsForAllSheets(){
 	for(int i=0;i<spreadsheet.getNumberOfSheets();i++){
 //		Sheet s=(Sheet) spreadsheet.getWorkbook().getSheetAt(i);
 		Sheet s=spreadsheet.getWorkbook().getSheetAt(i);
-		getPopUpButtons(s);
+		getPopUpButtonsForSheet(s);
 	}
 }
 
@@ -291,12 +323,12 @@ public void getPopUpButtonsForAllSheets(){
 // spreadsheet.setActiveSheetProtected(null);
    }
 
-    private void open(Object value) {
-        tabSheet.removeAllComponents();
-        if (value instanceof File) {
-//            openFile((File) value);
-            
-        } 
-    }
+//    private void open(Object value) {
+//        tabSheet.removeAllComponents();
+//        if (value instanceof File) {
+////            openFile((File) value);
+//            
+//        } 
+//    }
     
 }
