@@ -3,9 +3,9 @@ package com.vaadin.addon.spreadsheet.demo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Properties;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -25,7 +25,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
@@ -36,8 +35,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -47,7 +44,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @JavaScript("prettify.js")
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
-@SuppressWarnings({ "serial", "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
+@PreserveOnRefresh
 public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	
 	private static final long serialVersionUID = -2636301182919370995L;
@@ -59,21 +57,20 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 	 Button editButton,saveButton,downlaodButton;
 	 File testSheetFile;
 	 File tempFile;
-//    static final Properties prop = new Properties();
-//    static {
-//        try {
-//            // load a properties file
-//            prop.load(SpreadsheetDemoUI.class
-//                    .getResourceAsStream("config.properties"));
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-//    }
+    static final Properties prop = new Properties();
+    static {
+        try {
+            // load a properties file
+            prop.load(SpreadsheetDemoUI.class
+                    .getResourceAsStream("config.properties"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = SpreadsheetDemoUI.class, widgetset = "com.vaadin.addon.spreadsheet.demo.DemoWidgetSet")
-    @PreserveOnRefresh
-    public static class Servlet extends VaadinServlet  {
+       public static class Servlet extends VaadinServlet  {
 
 	
 	private static final long serialVersionUID = -7814001723142929438L;
@@ -256,8 +253,8 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
           	        tempOutputStream.flush();
           	        tempOutputStream.close(); 
 //          	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
-          	      spreadsheet= new Spreadsheet(tempFile);
-          	        copyFile(tempFile,testSheetFile);
+//          	      spreadsheet= new Spreadsheet(tempFile);
+//          	        copyFile(tempFile,testSheetFile);
 //          	        spreadsheet.setData(testSheetFile);
 //          	      spreadsheet.setData(sheet1);
           	   
