@@ -3,6 +3,8 @@ package com.vaadin.addon.spreadsheet.demo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
@@ -25,8 +27,14 @@ import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.server.BootstrapFragmentResponse;
+import com.vaadin.server.BootstrapListener;
+import com.vaadin.server.BootstrapPageResponse;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
@@ -44,19 +52,21 @@ import com.vaadin.ui.themes.ValoTheme;
 @JavaScript("prettify.js")
 @Theme("demo-theme")
 @Title("Vaadin Spreadsheet Demo")
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked" ,"NotSerializableException"})
 @PreserveOnRefresh
-public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
+public class SpreadsheetDemoUI extends UI implements ValueChangeListener,Serializable {
 	
 	private static final long serialVersionUID = -2636301182919370995L;
 //	private volatile VaadinSession session; 
 	 CellRangeAddress range;
 	 VerticalLayout rootLayout;
-	Spreadsheet spreadsheet;
+	static Spreadsheet spreadsheet;
 	HorizontalLayout topBar,sheetLayout;
-	 Button editButton,saveButton,downlaodButton;
-	 File testSheetFile;
-	 File tempFile;
+	 Button editButton;
+	static Button saveButton;
+	Button downlaodButton;
+	 static File testSheetFile;
+	 static File tempFile;
     static final Properties prop = new Properties();
     static {
         try {
@@ -70,12 +80,34 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = SpreadsheetDemoUI.class, widgetset = "com.vaadin.addon.spreadsheet.demo.DemoWidgetSet")
-       public static class Servlet extends VaadinServlet  {
+       public static class Servlet extends VaadinServlet implements SessionInitListener  {
 
 	
-	private static final long serialVersionUID = -7814001723142929438L;
+
+		private static final long serialVersionUID = -3633705842690837333L;
+
+		
+		    @Override
+		    public void sessionInit(SessionInitEvent event) throws ServiceException {
+		        event.getSession().addBootstrapListener(new MyBootstrapListener());
+		    }
+
+		    private static class MyBootstrapListener implements BootstrapListener {
+		        private static final long serialVersionUID = 1L;
+
+		        @Override
+		        public void modifyBootstrapPage(BootstrapPageResponse response) {
+		            //...
+		        }
+
+		        @Override
+		        public void modifyBootstrapFragment(BootstrapFragmentResponse response) {
+		            //...
+		        }
+		    }
+		}
     	
-    }
+    
 
 //    private Tree tree;
     private TabSheet tabSheet;
@@ -91,14 +123,8 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
     @Override
     protected void init(VaadinRequest request) {
        
-    	
-    	 
-//    	try {
-//    	    VaadinSession.getCurrent().getLockInstance().lock();
-////    	    VaadinSession.getCurrent().setAttribute(SESSION_SCOPED_VALUE_ID, "some value");
-//    	} finally {
-//    	    VaadinSession.getCurrent().getLockInstance().unlock();
-//    	}
+    	VaadinSession.setCurrent(VaadinSession.getCurrent());
+
     	 
     	rootLayout = new VerticalLayout();
 //    	rootLayout.setSizeFull();
@@ -117,7 +143,7 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 
 
     private void CreateUI() {
-    	VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
+//    	VaadinSession.getCurrent().getSession().setMaxInactiveInterval(300); 
 //   	 //ERROR HANDLING
 //   	 UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
 //           
@@ -140,10 +166,9 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
     	rootLayout.addComponent(getSheetLayout());
 	}
     
-//    @Override 
-//    public UI getUI() { 
-//        return this; 
-//    } 
+    private UI getAppUI() { 
+        return this; 
+    } 
     
     public HorizontalLayout getSheetLayout(){
     	sheetLayout=new HorizontalLayout();
@@ -216,9 +241,6 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 		editButton.addStyleName("topbarbuttons");
 		editButton.addClickListener(new ClickListener() {
       	
-          /**
-			 * 
-			 */
 			private static final long serialVersionUID = 483869047651452271L;
 
 		@Override
@@ -234,24 +256,53 @@ public class SpreadsheetDemoUI extends UI implements ValueChangeListener {
 		saveButton.addStyleName("topbarbuttons");
       saveButton.addClickListener(new ClickListener() {
       	
-          /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1792550832130526578L;
+         private static final long serialVersionUID = 1792550832130526578L;
 
 		@Override
           public void buttonClick(ClickEvent event) {
           	try {
           		
-          		 URL testSheetResource1 = this.getClass().getClassLoader()
-          	                .getResource("testsheets/SAP-DEAL4.xlsx");
-          			 System.out.println(testSheetResource1.toURI().toString());
-          			tempFile = new File(testSheetResource1.toURI());
-          	        
-          	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-          	        spreadsheet.write(tempOutputStream);
-          	        tempOutputStream.flush();
-          	        tempOutputStream.close(); 
+//          		 URL testSheetResource1 = this.getClass().getClassLoader()
+//          	                .getResource("testsheets/SAP-DEAL4.xlsx");
+//          			 System.out.println(testSheetResource1.toURI().toString());
+//          			tempFile = new File(testSheetResource1.toURI());
+//          	        
+//          	        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//          	        spreadsheet.write(tempOutputStream);
+//          	        tempOutputStream.flush();
+//          	        tempOutputStream.close(); 
+          		
+          		//------------TEST
+     		 URL testSheetResource1 = this.getClass().getClassLoader()
+              .getResource("testsheets/SAP-DEAL4.xlsx");
+//		 System.out.println(testSheetResource1.toURI().toString());
+		tempFile = new File(testSheetResource1.toURI());
+//		testSheetResource1.
+      
+//     FileOutputStream tempOutputStream = new FileOutputStream(testSheetResource1.getFile());
+		FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//      spreadsheet.write(testSheetResource1.getFile());
+		spreadsheet.write(tempOutputStream);
+    tempOutputStream.flush();
+    tempOutputStream.close(); 
+      copyFile(tempFile,testSheetFile);
+   
+//      spreadsheet.reload();
+     
+      getAppUI().getPage().reload();
+      
+//      tempOutputStream.flush();
+//      tempOutputStream.close(); 
+//      spreadsheet.read(tempFile);
+      
+//      FileOutputStream fos= new FileOutputStream("myfile");
+//      ObjectOutputStream oos= new ObjectOutputStream(fos);
+//      oos.writeObject(al);
+//      oos.close();
+//      fos.close();
+          		
+
+//          		-------------------------------------
 //          	        Spreadsheet sheet1 = new Spreadsheet(tempFile);
 //          	      spreadsheet= new Spreadsheet(tempFile);
 //          	        copyFile(tempFile,testSheetFile);
