@@ -1,6 +1,8 @@
 package com.vaadin.addon.spreadsheet.demo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,9 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
@@ -31,7 +31,6 @@ import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
@@ -64,6 +63,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 	 File testSheetFile;
 
 	 VaadinSession ses;
+	 FileInputStream fis;
     
     
     @WebServlet(value = "/*", asyncSupported = true)
@@ -103,22 +103,22 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
   
 
     public SpreadsheetDemoUI() {
-    	
-        super();
+    	ses= VaadinSession.getCurrent();
+
+   	 
+    	rootLayout = new VerticalLayout();
+//    	rootLayout.setSizeFull();
+        setContent(rootLayout);
+//        this.getSession();
+        CreateUI();
+//        super();
         setSizeFull();
         SpreadsheetFactory.logMemoryUsage();
     }
 
     @Override
     protected void init(VaadinRequest request) {
-     ses= VaadinSession.getCurrent();
-
-    	 
-    	rootLayout = new VerticalLayout();
-//    	rootLayout.setSizeFull();
-        setContent(rootLayout);
-//        this.getSession();
-        CreateUI();
+     
        
     }
    
@@ -215,7 +215,8 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 
 		@Override
           public void buttonClick(ClickEvent event) {
-        	  FileResource resource = new FileResource(testSheetFile);
+			File file=new File("C:/Users/rampa/Desktop/SAP-DEAL1.xlsx");
+        	  FileResource resource = new FileResource(file);
               FileDownloader fileDownloader = new FileDownloader(
                       resource);
               fileDownloader.extend(downlaodButton);
@@ -239,7 +240,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
       return editButton;
 	}
 
-	private Button getSaveButton() {
+	public Button getSaveButton() {
 		saveButton=new Button("SAVE");
 		saveButton.addStyleName("topbarbuttons");
       saveButton.addClickListener(new ClickListener() {
@@ -249,19 +250,35 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 		@Override
           public void buttonClick(ClickEvent event) {
           	try {
-          		
+          		fis.close();
+          		spreadsheet.write("C:/Users/rampa/Desktop/SAP-DEAL1.xlsx");
+//          		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//          		spreadsheet.write(bos);
+//          		byte[] data = bos.toByteArray();
+//          		bos.close();
+//
+//        		 URL testSheetResource1 = this.getClass().getClassLoader()
+//              .getResource("testsheets/SAP-DEAL4.xlsx");
+//	   File	tempFile = new File(testSheetResource1.toURI());
+////	   tempFile.
+//	   FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//	   tempOutputStream.write(data);
+//	   tempOutputStream.flush();
+//	   tempOutputStream.close();
           		//------------FINAL SAVE WORKING COPY
 //     		 URL testSheetResource1 = this.getClass().getClassLoader()
 //              .getResource("testsheets/SAP-DEAL1.xlsx");
 //	   File	tempFile = new File(testSheetResource1.toURI());
-		 File	tempFile= File.createTempFile("testTemp", ".xlsx");
-		
-		FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-		spreadsheet.write(tempOutputStream);
+//		
+////          		File	tempFile1= File.createTempFile("testTemp", ".xlsx");
+//		
+//		FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//		spreadsheet.write(tempOutputStream);
 //      tempOutputStream.flush();
-      tempOutputStream.close(); 
+//      tempOutputStream.close(); 
 //      copyFile(tempFile,testSheetFile);     //THIS CODE CAUSES SESSION EXPIRED PROBLEM
-      tempFile.delete();
+//      tempFile.delete();
+      ///////////////////////////////////77
 //      setSession(getSession());
 //      spreadsheet.reload();
 //    spreadsheet.read(tempFile);
@@ -292,12 +309,15 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 	
 	public Spreadsheet openSheet()
             throws URISyntaxException, IOException {
-    	URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("testsheets/SAP-DEAL1.xlsx");
-       testSheetFile = new File(testSheetResource.toURI());
-        spreadsheet = new Spreadsheet(testSheetFile);
-      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
-        //TEST-BEGIN ----------
+    	fis=new FileInputStream("C:/Users/rampa/Desktop/SAP-DEAL1.xlsx");
+        spreadsheet = new Spreadsheet(fis);
+//      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());///////////TEST-----------
+//        //TEST-BEGIN ----------
+//        URL testSheetResource = this.getClass().getClassLoader()
+//                .getResource("testsheets/SAP-DEAL1.xlsx");
+//       testSheetFile = new File(testSheetResource.toURI());
+//        spreadsheet = new Spreadsheet(testSheetFile);
+////      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 //        spreadsheet.addSheetChangeListener(new SheetChangeListener(){
 //
 //			private static final long serialVersionUID = -5585430837302587763L;
@@ -354,7 +374,17 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 
 	private void copyFile(File source, File dest)
     		throws IOException {
-    	FileUtils.copyFile(source, dest);
+//    	FileUtils.copyFile(source, dest);
+//		FileChannel inputChannel = null;
+//		FileChannel outputChannel = null;
+//		try {
+//			inputChannel = new FileInputStream(source).getChannel();
+//			outputChannel = new FileOutputStream(dest).getChannel();
+//			outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+//		} finally {
+//			inputChannel.close();
+//			outputChannel.close();
+//		}
     }   
 public void getPopUpButtonsForAllSheets(){
 	for(int i=0;i<spreadsheet.getNumberOfSheets();i++){

@@ -40,7 +40,7 @@ public class SpreadsheetReadWriteTest {
         tempOutputStream.close();
         tempFile.delete();
 
-        // no exceptions, everything ok
+       
     }
 
 
