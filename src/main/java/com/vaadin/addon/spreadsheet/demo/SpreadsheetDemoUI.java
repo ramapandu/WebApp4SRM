@@ -1,13 +1,11 @@
 package com.vaadin.addon.spreadsheet.demo;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -15,6 +13,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import com.vaadin.addon.spreadsheet.Spreadsheet;
+import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeEvent;
+import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
 import com.vaadin.annotations.JavaScript;
@@ -69,7 +69,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
     @WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = SpreadsheetDemoUI.class, widgetset = "com.vaadin.addon.spreadsheet.demo.DemoWidgetSet")
     @PreserveOnRefresh   
-    public static class Servlet extends VaadinServlet implements SessionInitListener  {
+    public static class Servlet extends VaadinServlet implements Serializable,SessionInitListener  {
 
 	
 
@@ -215,7 +215,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 
 		@Override
           public void buttonClick(ClickEvent event) {
-			File file=new File("C:/Users/rampa/Desktop/SAP-DEAL1.xlsx");
+			File file=new File("C:/Users/rampa/Desktop/testsheets/test.xlsx");
         	  FileResource resource = new FileResource(file);
               FileDownloader fileDownloader = new FileDownloader(
                       resource);
@@ -250,8 +250,10 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 		@Override
           public void buttonClick(ClickEvent event) {
           	try {
-          		fis.close();
-          		spreadsheet.write("C:/Users/rampa/Desktop/SAP-DEAL1.xlsx");
+          		File	tempFile = new File("C:/Users/rampa/Desktop/testsheets/test.xlsx");
+          		FileOutputStream fos = new FileOutputStream(tempFile);
+          		spreadsheet.write(fos);
+          		fos.close();
 //          		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //          		spreadsheet.write(bos);
 //          		byte[] data = bos.toByteArray();
@@ -302,6 +304,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+          
           }
       });	
       return saveButton;
@@ -309,25 +312,26 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 	
 	public Spreadsheet openSheet()
             throws URISyntaxException, IOException {
-    	fis=new FileInputStream("C:/Users/rampa/Desktop/SAP-DEAL1.xlsx");
+    	fis=new FileInputStream("C:/Users/rampa/Desktop/testsheets/test.xlsx");
         spreadsheet = new Spreadsheet(fis);
+        fis.close();
 //      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());///////////TEST-----------
 //        //TEST-BEGIN ----------
 //        URL testSheetResource = this.getClass().getClassLoader()
 //                .getResource("testsheets/SAP-DEAL1.xlsx");
 //       testSheetFile = new File(testSheetResource.toURI());
 //        spreadsheet = new Spreadsheet(testSheetFile);
-////      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
-//        spreadsheet.addSheetChangeListener(new SheetChangeListener(){
-//
-//			private static final long serialVersionUID = -5585430837302587763L;
-//
-//		@Override
-//		public void onSheetChange(SheetChangeEvent event) {
-//getPopUpButtonsForSheet(spreadsheet.getActiveSheet());		
-//
-//		}
-//    });
+      getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
+        spreadsheet.addSheetChangeListener(new SheetChangeListener(){
+
+			private static final long serialVersionUID = -5585430837302587763L;
+
+		@Override
+		public void onSheetChange(SheetChangeEvent event) {
+       getPopUpButtonsForSheet(spreadsheet.getActiveSheet());		
+
+		}
+    });
       //TEST-END------------
         return spreadsheet;
     }
