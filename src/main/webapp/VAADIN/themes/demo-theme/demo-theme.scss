@@ -9,13 +9,14 @@ $v-gradient: false;
 
 @import "../valo/valo.scss";
 @import "prettify.scss";
-@import "mytheme.css";
+
 
 @mixin demo-theme {
   @include valo;
 
   // Include SplitPanel styles manually (avoid any excess output and also modify the splitter size)
   @include valo-splitpanel-global;
+
 
   .v-splitpanel-horizontal {
     @include valo-splitpanel-style($orientation: horizontal, $splitter-size: 0);
@@ -56,9 +57,33 @@ $v-gradient: false;
     }
   }
   
+  .backColor{background: url("images/srh.jpg") no-repeat;}
+
+.backgroundimage{
+	background: url("images/5.jpg") no-repeat;
+    background-size: 1400px 850px;
+    height: 650px;
+    width: 1350px;
+    color: blue;
+} 
+    
+  
    //topBar
-  topbar{
-  height:5%;
+  .topbar{
+  padding-top: 15px;
+  height:15%;
+  width:100%;
+  }
+  
+  .sheetlayout{
+  height:80%;
+  width:100%;
+  }
+  
+  .topbarbuttons{
+      margin: 3px;
+    color: red;
+    background-color: black;
   }
 
   // Tree

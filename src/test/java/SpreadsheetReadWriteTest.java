@@ -22,99 +22,27 @@ import com.vaadin.addon.spreadsheet.Spreadsheet;
  */
 public class SpreadsheetReadWriteTest {
 
-    @Test
-    public void openAndSaveFileWithPOI_emptyXLSXFile_openAndSaveWorks()
-            throws URISyntaxException, IOException, InvalidFormatException {
-        URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("test_sheets/empty.xlsx");
-        File testSheetFIle = new File(testSheetResource.toURI());
 
-        FileInputStream fis = new FileInputStream(testSheetFIle);
-        XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis);
-        fis.close();
 
-        File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        workbook.write(fos);
-        fos.close();
-        tempFile.delete();
-        // no exceptions, everything ok
-    }
 
     @Test
     public void openAndSaveFile_emptyXLSXFile_openAndSaveWorks()
             throws URISyntaxException, IOException {
         URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("SAP-DEAl.xlsx");
+                .getResource("testsheets/sample.xlsx");
         File testSheetFIle = new File(testSheetResource.toURI());
         Spreadsheet sheet = new Spreadsheet(testSheetFIle);
         //Test
-sheet.getCell("A3").setCellValue("WRITE SUccess");
+            sheet.getCell("A3").setCellValue("WRITE SUccess");
         File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
         FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
         sheet.write(tempOutputStream);
         tempOutputStream.close();
         tempFile.delete();
 
-        // no exceptions, everything ok
+       
     }
 
-    @Test
-    public void openAndSaveFile_emptyXLSXFile_FileDoesNotContainAdditionalDrawing()
-            throws URISyntaxException, IOException {
-        URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("test_sheets/empty.xlsx");
-        File testSheetFIle = new File(testSheetResource.toURI());
-        Spreadsheet sheet = new Spreadsheet(testSheetFIle);
 
-        File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-        FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-        sheet.write(tempOutputStream);
-        tempOutputStream.close();
 
-        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(
-                tempFile));
-
-        ZipEntry entry = zipInputStream.getNextEntry();
-        do {
-            String entryName = entry.getName();
-            assertFalse("Empty XLSX contains drawing after import/export: "
-                    + entryName, entryName.contains("drawing"));
-            entry = zipInputStream.getNextEntry();
-        } while (entry != null);
-
-        zipInputStream.close();
-        tempFile.delete();
-    }
-
-    @Test
-    public void openAndSaveFileWithPOI_emptyXLSXFile_FileDoesNotContainAdditionalDrawing()
-            throws URISyntaxException, IOException, InvalidFormatException {
-        URL testSheetResource = this.getClass().getClassLoader()
-                .getResource("test_sheets/empty.xlsx");
-        File testSheetFIle = new File(testSheetResource.toURI());
-
-        FileInputStream fis = new FileInputStream(testSheetFIle);
-        XSSFWorkbook workbook = (XSSFWorkbook) WorkbookFactory.create(fis);
-        fis.close();
-
-        File tempFile = File.createTempFile("resultEmptyFile", "xlsx");
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        workbook.write(fos);
-        fos.close();
-
-        ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(
-                tempFile));
-
-        ZipEntry entry = zipInputStream.getNextEntry();
-        do {
-            String entryName = entry.getName();
-            assertFalse("Empty XLSX contains drawing after import/export: "
-                    + entryName, entryName.contains("drawing"));
-            entry = zipInputStream.getNextEntry();
-        } while (entry != null);
-
-        zipInputStream.close();
-        tempFile.delete();
-    }
 }
