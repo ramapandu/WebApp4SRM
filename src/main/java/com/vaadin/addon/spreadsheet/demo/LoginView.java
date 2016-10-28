@@ -62,7 +62,7 @@ PasswordField passwordField;
                 Notification.show("Welcome " + username);
                 getAppUI().setLoggedInUser(username);
                 ((SpreadsheetDemoUI)UI.getCurrent()).setLoggedInUser(username);
-                getAppUI().getNavigator().navigateTo(SheetView.NAME);
+                getAppUI().getNavigator().navigateTo("sheet");
                 
             	}
             }
