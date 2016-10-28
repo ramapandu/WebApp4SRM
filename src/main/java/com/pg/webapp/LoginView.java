@@ -1,5 +1,6 @@
-package com.vaadin.addon.spreadsheet.demo;
+package com.pg.webapp;
 
+import com.pg.webapp.domain.User;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -22,8 +23,10 @@ private SheetView sheetview;
    	private static final long serialVersionUID = 1571188358428569977L;
 
 	public static final String NAME = "login";
+   
+   
 
-    String username;
+	String username;
     String password;
     SpreadsheetDemoUI ui;
     VerticalLayout mainLayout;
@@ -38,6 +41,8 @@ PasswordField passwordField;
         mainLayout.setStyleName("backgroundimage");
         setCompositionRoot(mainLayout);
         
+        
+       
         FormLayout loginForm=new FormLayout();
        this.ui=getAppUI();
       
@@ -60,17 +65,13 @@ PasswordField passwordField;
                  password = passwordField.getValue();
             	if(username.equals("test@test.com") && password.equals("test12345")){
                 Notification.show("Welcome " + username);
-                getAppUI().setLoggedInUser(username);
-                ((SpreadsheetDemoUI)UI.getCurrent()).setLoggedInUser(username);
+//                user.setLoggedInUser(username);
+                getAppUI().getUser().setLoggedInUser(username);
                 getAppUI().getNavigator().navigateTo("sheet");
                 
             	}
             }
         });
-        
-      
-        
-        
         
         final Button cancelButton = new Button("Cancel", new Button.ClickListener() {
            

@@ -1,9 +1,10 @@
-package com.vaadin.addon.spreadsheet.demo;
+package com.pg.webapp;
 
 import java.io.Serializable;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.pg.webapp.domain.User;
 import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -30,7 +31,7 @@ import com.vaadin.ui.UI;
 @PreserveOnRefresh
 public class SpreadsheetDemoUI extends UI implements Serializable {
 	
-	String user; 
+	 private User user; 
     Navigator navigator;
     
       protected static final String MAINVIEW = "main";
@@ -68,8 +69,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 		}
     	
     public SpreadsheetDemoUI() {
-//    	navigator.navigateTo("login");
-//        SpreadsheetFactory.logMemoryUsage();
+    	user=new User();
     }
 
     @Override
@@ -77,18 +77,15 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
     	navigator = new Navigator(this,this);
 		navigator.addView("", new LoginView(navigator));
 		navigator.addView(SheetView.NAME,SheetView.class);
-//       navigator.navigateTo("login");
     }
    
-       
-   public void setLoggedInUser(String username) {
-	   this.user=username;		
-	   	} 
-   
-   public Object getLoggedInUser() {
-		return user;
-	}
-   
+    public User getUser() {
+    	return user;
+         }
+
+         public void setUser(User user) {
+    	this.user = user;
+         }   
    Navigator getNavigatorManager(){
 		return navigator;
 	}

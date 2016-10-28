@@ -1,4 +1,4 @@
-package com.vaadin.test;
+package com.pg.webapp.test;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
