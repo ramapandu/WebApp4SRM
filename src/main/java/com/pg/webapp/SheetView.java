@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -49,6 +50,7 @@ public class SheetView extends CustomComponent implements View  {
 		Button saveButton;
 		Button downlaodButton;
 		 File testSheetFile;
+		 Table logTable;
 		 private TabSheet tabSheet;
 
 		 VaadinSession ses;
@@ -108,8 +110,15 @@ public class SheetView extends CustomComponent implements View  {
 		      tabSheet.setSizeFull();
 		      	      tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 		   try {
-				tabSheet.addComponent(openSheet());
-				
+				tabSheet.addTab(openSheet(),"Sheet");
+				logTable = new Table("Logs");
+				logTable.addContainerProperty("User", String.class, null);
+				logTable.addContainerProperty("Action", String.class, null);
+				logTable.addContainerProperty("Date", String.class, null);
+				logTable.setPageLength(logTable.size());
+				tabSheet.addTab(logTable,"Logs");
+				Date d=new Date();
+				logTable.addItem(new Object[]{"Ravi","Changed value  A to B",d.toString()});
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
