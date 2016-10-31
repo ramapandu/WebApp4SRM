@@ -15,17 +15,19 @@ import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeEvent;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
+import com.vaadin.data.Item;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
@@ -44,9 +46,7 @@ public class SheetView extends CustomComponent implements View {
 	VerticalLayout rootLayout;
 	Spreadsheet spreadsheet;
 	HorizontalLayout topBar, sheetLayout;
-	Button editButton;
-	Button saveButton;
-	Button downlaodButton;
+	Button editButton, saveButton, downlaodButton, exportButton;
 	File testSheetFile;
 	Table logTable;
 	private TabSheet tabSheet;
@@ -82,15 +82,46 @@ public class SheetView extends CustomComponent implements View {
 
 	private HorizontalLayout getTopBar() {
 		topBar = new HorizontalLayout();
+		getEditButton();
+		getLogoutButton();
+		getSaveButton();
+		getDownloadButton();
+		getExportButton();
+		final GridLayout grid = new GridLayout(5, 1);
+//		grid.setWidth(400, Unit.PIXELS);
+		grid.setHeight(35, Unit.PIXELS);
+
+		grid.addComponent(editButton, 0, 0);
+		grid.setComponentAlignment(editButton, Alignment.TOP_LEFT);
+
+		grid.addComponent(saveButton, 1, 0);
+		grid.setComponentAlignment(saveButton, Alignment.TOP_CENTER);
+
+		grid.addComponent(downlaodButton, 2, 0);
+		grid.setComponentAlignment(downlaodButton, Alignment.TOP_RIGHT);
+
+		grid.addComponent(exportButton, 3, 0);
+		grid.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+
+		grid.addComponent(logoutButton, 4, 0);
+		grid.setComponentAlignment(logoutButton, Alignment.TOP_RIGHT);
+
 		topBar.setPrimaryStyleName("topbar");
-		topBar.addComponent(getEditButton());
-		topBar.addComponent(getSaveButton());
-		topBar.addComponent(getDownloadButton());
-		topBar.addComponent(getLogoutButton());
+		// topBar.addComponent(getEditButton());
+		// topBar.addComponent(getSaveButton());
+		// topBar.addComponent(getDownloadButton());
+		// topBar.addComponent(getExportButton());
+		// topBar.setComponentAlignment(exportButton,Alignment.TOP_CENTER);
+
+		// topBar.addComponent(logoutButton);
+		// topBar.setComponentAlignment(logoutButton,Alignment.TOP_RIGHT);
+
 		// topBar.setComponentAlignment(logoutButton, Alignment.BOTTOM_RIGHT);
+		topBar.addComponent(grid);
 		return topBar;
 	}
 
+	@SuppressWarnings("unchecked")
 	private TabSheet getTabSheet() {
 		tabSheet = new TabSheet();
 
@@ -118,7 +149,11 @@ public class SheetView extends CustomComponent implements View {
 			tabSheet.addTab(logTable, "Logs");
 			Date d = new Date();
 			logTable.addItem(new Object[] { "Ravi", "Changed value  A to B",
-					d.toString() });
+					d.toString() },new Integer(1));
+//			Item item = logTable.addItem("TIM");
+//			item.getItemProperty("User").setValue("Kamal");
+//			item.getItemProperty("Action").setValue("Changed value  A to B");
+//			item.getItemProperty("Date").setValue(d.toString());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -135,21 +170,29 @@ public class SheetView extends CustomComponent implements View {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-//				getUI().getSession().close();
-//				getUI().getSession().getSession().invalidate() ;
-//				VaadinService.getCurrentRequest().getWrappedSession().invalidate();
-//				logoutButton.setCaption("LOGOUT");
-////				getAppUI().getCurrent().getPage().reload();
-//				getAppUI().getNavigatorManager().navigateTo("main");
 				getSession().close();
-                ( (SpreadsheetDemoUI) UI.getCurrent() ).getUser().setLoggedInUser(null);
-                getUI().getPage().setLocation( "/vaadin-spreadsheet-demo" );
-
-                
+				((SpreadsheetDemoUI) UI.getCurrent()).getUser()
+						.setLoggedInUser(null);
+				getUI().getPage().setLocation("/vaadin-spreadsheet-demo");
 			}
 		});
 		logoutButton.addStyleName("topbarbuttons");
 		return logoutButton;
+	}
+
+	private Button getExportButton() {
+		exportButton = new Button("EXPORT");
+		exportButton.addStyleName("topbarbuttons");
+		exportButton.addClickListener(new ClickListener() {
+
+			private static final long serialVersionUID = -7614812368402111788L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+			}
+		});
+		return exportButton;
 	}
 
 	private Button getDownloadButton() {
@@ -161,8 +204,8 @@ public class SheetView extends CustomComponent implements View {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				File file = new File(
-						"C:/Users/rampa/Desktop/testsheets/","test.xlsx");
+				File file = new File("C:/Users/rampa/Desktop/testsheets/",
+						"test.xlsx");
 				FileResource resource = new FileResource(file);
 				FileDownloader fileDownloader = new FileDownloader(resource);
 				fileDownloader.extend(downlaodButton);
@@ -270,6 +313,8 @@ public class SheetView extends CustomComponent implements View {
 		// .getResource("testsheets/SAP-DEAL1.xlsx");
 		// testSheetFile = new File(testSheetResource.toURI());
 		// spreadsheet = new Spreadsheet(testSheetFile);
+		spreadsheet.setSizeFull();
+		spreadsheet.setHeight("700px");
 		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 		spreadsheet.addSheetChangeListener(new SheetChangeListener() {
 

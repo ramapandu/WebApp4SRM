@@ -70,6 +70,10 @@ PasswordField passwordField;
                 getAppUI().getNavigator().navigateTo("sheet");
                 
             	}
+            	else{
+            		Notification.show("User name OR Password is wrong");
+            		            	}
+            		
             }
         });
         
