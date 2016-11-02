@@ -4,20 +4,14 @@ import java.io.Serializable;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.pg.webapp.domain.LogTable;
 import com.pg.webapp.domain.User;
-import com.vaadin.addon.spreadsheet.SpreadsheetFactory;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.BootstrapFragmentResponse;
-import com.vaadin.server.BootstrapListener;
-import com.vaadin.server.BootstrapPageResponse;
-import com.vaadin.server.ServiceException;
-import com.vaadin.server.SessionInitEvent;
-import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
@@ -31,7 +25,15 @@ import com.vaadin.ui.UI;
 @PreserveOnRefresh
 public class SpreadsheetDemoUI extends UI implements Serializable {
 	
-	 private User user; 
+	 public LogTable getLogTable() {
+		return logTable;
+	}
+
+	public void setLogTable(LogTable logTable) {
+		this.logTable = logTable;
+	}
+	private User user; 
+	 private LogTable logTable;
     Navigator navigator;
     
       protected static final String MAINVIEW = "main";
@@ -70,6 +72,8 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
     	
     public SpreadsheetDemoUI() {
     	user=new User();
+    	logTable=new LogTable();
+    	
     }
 
     @Override

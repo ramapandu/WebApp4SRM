@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.pg.webapp.domain.User;
 import com.vaadin.addon.spreadsheet.Spreadsheet;
@@ -142,11 +146,14 @@ public class SheetView extends CustomComponent implements View {
 		try {
 			tabSheet.addTab(openSheet(), "Sheet");
 			logTable = new Table("Logs");
-			logTable.addContainerProperty("User", String.class, null);
-			logTable.addContainerProperty("Action", String.class, null);
-			logTable.addContainerProperty("Date", String.class, null);
+//			logTable=getAppUI().getLogTable().getLogTable();
+			logTable=getLogSheet();
+//			logTable.addContainerProperty("User", String.class, null);
+//			logTable.addContainerProperty("Action", String.class, null);
+//			logTable.addContainerProperty("Date", String.class, null);
 			logTable.setPageLength(logTable.size());
 			tabSheet.addTab(logTable, "Logs");
+			
 			Date d = new Date();
 			logTable.addItem(new Object[] { "Ravi", "Changed value  A to B",
 					d.toString() },new Integer(1));
@@ -163,6 +170,31 @@ public class SheetView extends CustomComponent implements View {
 		return tabSheet;
 	}
 
+	private Table getLogSheet() throws IOException{
+		FileInputStream fs = new FileInputStream("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
+		File f=new File("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
+		Table logTable=new Table();
+		logTable.addContainerProperty("User", String.class, null);
+		logTable.addContainerProperty("Action", String.class, null);
+		logTable.addContainerProperty("Date", String.class, null);
+//		Spreadsheet logSheet= new Spreadsheet(fs);
+		 
+		 Workbook book = new XSSFWorkbook(fs);
+		 Sheet sheet = book.getSheetAt(0);
+		 int i=0;
+		 for (Row row : sheet) {
+//	            for (Cell cell : row) {
+if(row.getRowNum()>0)
+	            	logTable.addItem(new Object[] { row.getCell(0).toString(), row.getCell(1).toString(),
+	            			row.getCell(2).toString() },new Integer(i));
+//	            }
+	            i++;
+	        }
+	        fs.close();
+		
+		return logTable;
+	}
+	
 	private Button getLogoutButton() {
 		logoutButton = new Button("Logout", new Button.ClickListener() {
 
@@ -244,6 +276,7 @@ public class SheetView extends CustomComponent implements View {
 					FileOutputStream fos = new FileOutputStream(tempFile);
 					spreadsheet.write(fos);
 					fos.close();
+//					------getAppUI().getLogTable().setLogTable(logTable);
 					// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					// spreadsheet.write(bos);
 					// byte[] data = bos.toByteArray();
@@ -316,6 +349,7 @@ public class SheetView extends CustomComponent implements View {
 		spreadsheet.setSizeFull();
 		spreadsheet.setHeight("700px");
 		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
+//		------------getAppUI().getLogTable().setLogTable(logTable);
 		spreadsheet.addSheetChangeListener(new SheetChangeListener() {
 
 			private static final long serialVersionUID = -5585430837302587763L;
