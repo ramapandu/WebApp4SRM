@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,7 +18,6 @@ import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeEvent;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
-import com.vaadin.data.Item;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -34,6 +32,8 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -129,30 +129,28 @@ public class SheetView extends CustomComponent implements View {
 	private TabSheet getTabSheet() {
 		tabSheet = new TabSheet();
 
-		// tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener()
-		// {
-		//
-		//
-		// private static final long serialVersionUID = -1698363226401049948L;
-		//
-		// @Override
-		// public void selectedTabChange(SelectedTabChangeEvent event) {
-		// com.vaadin.ui.JavaScript
-		// .eval("setTimeout(function(){prettyPrint();},300);");
-		// }
-		// });
+		 tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener()
+		 {
+		 private static final long serialVersionUID = -1698363226401049948L;
+		
+		 @Override
+		 public void selectedTabChange(SelectedTabChangeEvent event) {
+		 com.vaadin.ui.JavaScript.eval("setTimeout(function(){prettyPrint();},300);");
+		 }
+		 });
 		tabSheet.setSizeFull();
 		tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 		try {
 			tabSheet.addTab(openSheet(), "Sheet");
-			logTable = new Table("Logs");
+//			logTable = new Table("Logs");
+			getLogSheet();
 //			logTable=getAppUI().getLogTable().getLogTable();
-			logTable=getLogSheet();
+//			logTable=getLogSheet();
 //			logTable.addContainerProperty("User", String.class, null);
 //			logTable.addContainerProperty("Action", String.class, null);
 //			logTable.addContainerProperty("Date", String.class, null);
 			logTable.setPageLength(logTable.size());
-			tabSheet.addTab(logTable, "Logs");
+			
 			
 			Date d = new Date();
 			logTable.addItem(new Object[] { "Ravi", "Changed value  A to B",
@@ -161,6 +159,8 @@ public class SheetView extends CustomComponent implements View {
 //			item.getItemProperty("User").setValue("Kamal");
 //			item.getItemProperty("Action").setValue("Changed value  A to B");
 //			item.getItemProperty("Date").setValue(d.toString());
+			
+			tabSheet.addTab(logTable, "Logs");
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -172,8 +172,7 @@ public class SheetView extends CustomComponent implements View {
 
 	private Table getLogSheet() throws IOException{
 		FileInputStream fs = new FileInputStream("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
-		File f=new File("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
-		Table logTable=new Table();
+		logTable=new Table();
 		logTable.addContainerProperty("User", String.class, null);
 		logTable.addContainerProperty("Action", String.class, null);
 		logTable.addContainerProperty("Date", String.class, null);
@@ -347,7 +346,7 @@ if(row.getRowNum()>0)
 		// testSheetFile = new File(testSheetResource.toURI());
 		// spreadsheet = new Spreadsheet(testSheetFile);
 		spreadsheet.setSizeFull();
-		spreadsheet.setHeight("700px");
+		spreadsheet.setHeight("550px");
 		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 //		------------getAppUI().getLogTable().setLogTable(logTable);
 		spreadsheet.addSheetChangeListener(new SheetChangeListener() {
