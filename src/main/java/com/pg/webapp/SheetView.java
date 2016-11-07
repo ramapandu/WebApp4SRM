@@ -5,16 +5,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.pg.webapp.domain.User;
 import com.vaadin.addon.spreadsheet.Spreadsheet;
+import com.vaadin.addon.spreadsheet.Spreadsheet.CellValueChangeEvent;
+import com.vaadin.addon.spreadsheet.Spreadsheet.CellValueChangeListener;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeEvent;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
@@ -52,6 +56,8 @@ public class SheetView extends CustomComponent implements View {
 	Button editButton, saveButton, downlaodButton, exportButton;
 	File testSheetFile;
 	Table logTable;
+	Workbook logBook;
+	Sheet logSheet;
 	private TabSheet tabSheet;
 
 	VaadinSession ses;
@@ -143,10 +149,10 @@ public class SheetView extends CustomComponent implements View {
 			getLogSheet();
 			logTable.setPageLength(logTable.size());
 
-			Date d = new Date();
-			logTable.addItem(
-					new Object[] { "Ravi", "Changed value  A to B",
-							d.toString() }, new Integer(1));
+//			Date d = new Date();
+//			logTable.addItem(
+//					new Object[] { "Ravi", "Changed value  A to B",
+//							d.toString() }, new Integer(1));
 
 			tabSheet.addTab(logTable, "Logs");
 		} catch (URISyntaxException e) {
@@ -167,10 +173,10 @@ public class SheetView extends CustomComponent implements View {
 		logTable.addContainerProperty("Date", String.class, null);
 		// Spreadsheet logSheet= new Spreadsheet(fs);
 
-		Workbook book = new XSSFWorkbook(fs);
-		Sheet sheet = book.getSheetAt(0);
+		 logBook = new XSSFWorkbook(fs);
+		logSheet = logBook.getSheetAt(0);
 		int i = 0;
-		for (Row row : sheet) {
+		for (Row row : logSheet) {
 			// for (Cell cell : row) {
 			if (row.getRowNum() > 0)
 				logTable.addItem(new Object[] { row.getCell(0).toString(),
@@ -180,7 +186,7 @@ public class SheetView extends CustomComponent implements View {
 			i++;
 		}
 		fs.close();
-
+       logBook.close();
 		return logTable;
 	}
 
@@ -264,6 +270,7 @@ public class SheetView extends CustomComponent implements View {
 							"C:/Users/rampa/Desktop/testsheets/test.xlsx");
 					FileOutputStream fos = new FileOutputStream(tempFile);
 					spreadsheet.write(fos);
+					fos.flush();
 					fos.close();
 					// ------getAppUI().getLogTable().setLogTable(logTable);
 					// ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -335,6 +342,7 @@ public class SheetView extends CustomComponent implements View {
 		// .getResource("testsheets/SAP-DEAL1.xlsx");
 		// testSheetFile = new File(testSheetResource.toURI());
 		// spreadsheet = new Spreadsheet(testSheetFile);
+		// TEST-END------------
 		spreadsheet.setSizeFull();
 		spreadsheet.setHeight("550px");
 		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
@@ -349,7 +357,50 @@ public class SheetView extends CustomComponent implements View {
 
 			}
 		});
-		// TEST-END------------
+		spreadsheet.addCellValueChangeListener(new CellValueChangeListener() {
+		
+			private static final long serialVersionUID = 1334987428943711253L;
+                @Override
+				public void onCellValueChange(CellValueChangeEvent event) {
+                	Set<CellReference> changedCells = null;
+                	changedCells = event.getChangedCells();
+                   
+//                    changedCells.forEach(cell--> stringBuffer.append(" "+String.valueOf(cell)));
+//                    changedCells.forEach(cell-->
+//                    Notification.show(stringBuffer.toString());
+                    Iterator<CellReference> iterator = changedCells.iterator();
+                    int i=logTable.size();
+                    CellReference cr;
+                    Row r;
+                    Cell c;
+                    String[] element;
+                    while(iterator.hasNext()){
+                      cr=iterator.next();
+                      element =cr.getCellRefParts();
+                      r = spreadsheet.getActiveSheet().getRow(Integer.valueOf(element[1])-1);
+                      c=null;
+//                    if (r != null) {
+                    	c=r.getCell(new Integer(cr.getCol()));
+//                       c = r.getCell(iterator.next().getCol());
+//                    	 System.out.println(r);
+                      System.out.println(c);
+//                    }
+                    
+//                      changedCells.forEach(cell);
+//                    	if(c!=null){
+                     logTable.addItem(new Object[] { getAppUI().getUser().getLoggedInUser(),
+                    		c+ "Cell-"+element[2]+""+element[1]+"in sheet-"+
+                    				              spreadsheet.getActiveSheet().getSheetName(), "today" },
+     						new Integer(i+1));
+//                    	}
+                    }
+
+//				logTable.addItem(new Object[] { getAppUI().getUser().getLoggedInUser(),
+//						event.getChangedCells().toString(), "today" },
+//						new Integer(3));
+			}
+		});
+		
 		return spreadsheet;
 	}
 
@@ -379,7 +430,7 @@ public class SheetView extends CustomComponent implements View {
 			// --------------
 
 			// Define the range
-			CellRangeAddress range = new CellRangeAddress(0, 10, 0, 10);
+			CellRangeAddress range = new CellRangeAddress(0, 300, 0, 50);
 			System.out.println(sheet.getFirstRowNum() + ""
 					+ sheet.getLastRowNum() + "" + 1);
 			// Create a table in the range
