@@ -1,5 +1,7 @@
 package com.pg.webapp;
 
+import java.io.Serializable;
+
 import com.pg.webapp.domain.User;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -17,7 +19,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public class LoginView extends CustomComponent implements View {
+public class LoginView extends CustomComponent implements View,Serializable {
 	
 private SheetView sheetview;
    	private static final long serialVersionUID = 1571188358428569977L;

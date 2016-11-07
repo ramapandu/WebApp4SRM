@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -39,16 +42,16 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-public class SheetView extends CustomComponent implements View {
+public class SheetView extends CustomComponent implements View,Serializable {
 
 	private User user;
 	public static final String NAME = "sheet";
 	private static final long serialVersionUID = 6714096000861957459L;
 	Button logoutButton;
 
-	CellRangeAddress range;
+//	CellRangeAddress range;
 	VerticalLayout rootLayout;
-	Spreadsheet spreadsheet;
+//	Spreadsheet spreadsheet;
 	HorizontalLayout topBar, sheetLayout;
 	Button editButton, saveButton, downlaodButton, exportButton;
 	File testSheetFile;
@@ -56,7 +59,7 @@ public class SheetView extends CustomComponent implements View {
 	private TabSheet tabSheet;
 
 	VaadinSession ses;
-	FileInputStream fis;
+	InputStream fis;
 
 	@SuppressWarnings({ "unused" })
 	public SheetView() {
@@ -170,8 +173,10 @@ public class SheetView extends CustomComponent implements View {
 		return tabSheet;
 	}
 
-	private Table getLogSheet() throws IOException{
-		FileInputStream fs = new FileInputStream("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
+	private Table getLogSheet() throws IOException, URISyntaxException{
+		URL testSheetResource = this.getClass().getClassLoader().getResource("testsheets/logs.xlsx");
+		FileInputStream fs = new FileInputStream(testSheetResource.getFile());
+//				"C:/Users/rampa/Desktop/testsheets/logs.xlsx");
 		logTable=new Table();
 		logTable.addContainerProperty("User", String.class, null);
 		logTable.addContainerProperty("Action", String.class, null);
@@ -235,8 +240,10 @@ if(row.getRowNum()>0)
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				File file = new File("C:/Users/rampa/Desktop/testsheets/",
-						"test.xlsx");
+				File file=null;
+				URL testSheetResource = this.getClass().getClassLoader().getResource("testsheets/test.xlsx");
+				file = new File(testSheetResource.getFile());
+//						"C:/Users/rampa/Desktop/testsheets/","test.xlsx");
 				FileResource resource = new FileResource(file);
 				FileDownloader fileDownloader = new FileDownloader(resource);
 				fileDownloader.extend(downlaodButton);
@@ -270,11 +277,22 @@ if(row.getRowNum()>0)
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					File tempFile = new File(
-							"C:/Users/rampa/Desktop/testsheets/test.xlsx");
-					FileOutputStream fos = new FileOutputStream(tempFile);
-					spreadsheet.write(fos);
-					fos.close();
+//					URL testSheetResource = this.getClass().getClassLoader().getResource("testsheets/test.xlsx");
+//					File tempFile = new File(testSheetResource.getFile());
+////							-----"C:/Users/rampa/Desktop/testsheets/test.xlsx");
+//					FileOutputStream fos = new FileOutputStream(tempFile);
+					 System.out.println("SAVE SUCCESS1");
+					getAppUI().getSheet().getSpreadsheet().write(this.getClass().getClassLoader().getResource("testsheets/test2.xlsx").toString());
+					 System.out.println("SAVE SUCCESS2");
+//					testSheetResource.getClass().
+//					fos.close();
+//					tempFile=null;
+				   System.out.println("SAVE SUCCESS3");
+//				       getAppUI().getPage().reload();
+
+//					FileOutputStream fos = new FileOutputStream(SheetView.class.getResource("/com/pg/webapp/files/test.xlsx").getFile());
+//					spreadsheet.write(fos);
+//					fos.close();
 //					------getAppUI().getLogTable().setLogTable(logTable);
 					// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					// spreadsheet.write(bos);
@@ -329,6 +347,9 @@ if(row.getRowNum()>0)
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+//				finally {
+//					fos.close();
+//	            }
 
 			}
 		});
@@ -336,8 +357,12 @@ if(row.getRowNum()>0)
 	}
 
 	public Spreadsheet openSheet() throws URISyntaxException, IOException {
-		fis = new FileInputStream("C:/Users/rampa/Desktop/testsheets/test.xlsx");
-		spreadsheet = new Spreadsheet(fis);
+//		 URL testSheetResource = 
+		fis = this.getClass().getClassLoader().getResourceAsStream("testsheets/test.xlsx");
+//				"C:/Users/rampa/Desktop/testsheets/test.xlsx");
+		
+		final Spreadsheet spreadsheet = new Spreadsheet(fis);
+		getAppUI().getSheet().setSpreadsheet(spreadsheet);
 		fis.close();
 		// getPopUpButtonsForSheet(spreadsheet.getActiveSheet());///////////TEST-----------
 		// //TEST-BEGIN ----------
@@ -347,7 +372,7 @@ if(row.getRowNum()>0)
 		// spreadsheet = new Spreadsheet(testSheetFile);
 		spreadsheet.setSizeFull();
 		spreadsheet.setHeight("550px");
-		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
+//		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 //		------------getAppUI().getLogTable().setLogTable(logTable);
 		spreadsheet.addSheetChangeListener(new SheetChangeListener() {
 
@@ -355,7 +380,7 @@ if(row.getRowNum()>0)
 
 			@Override
 			public void onSheetChange(SheetChangeEvent event) {
-				getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
+//				getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 
 			}
 		});
@@ -389,14 +414,14 @@ if(row.getRowNum()>0)
 			// --------------
 
 			// Define the range
-			CellRangeAddress range = new CellRangeAddress(0, 10, 0, 10);
-			System.out.println(sheet.getFirstRowNum() + ""
-					+ sheet.getLastRowNum() + "" + 1);
-			// Create a table in the range
-			SpreadsheetFilterTable table = new SpreadsheetFilterTable(
-					spreadsheet, sheet, range);
-			table.getPopupButtons();
-			// table.getSheet().
+			//_________________TEST________________________________
+//			CellRangeAddress range = new CellRangeAddress(0, 10, 0, 10);
+//			System.out.println(sheet.getFirstRowNum() + ""
+//					+ sheet.getLastRowNum() + "" + 1);
+//			SpreadsheetFilterTable table = new SpreadsheetFilterTable(
+//					getAppUI().getSheet().getSpreadsheet(), sheet, range);
+//			table.getPopupButtons();
+			//________________TEST______________________________________
 
 		} catch (ArrayIndexOutOfBoundsException e) {
 			e.printStackTrace();
@@ -404,9 +429,9 @@ if(row.getRowNum()>0)
 	}
 
 	public void getPopUpButtonsForAllSheets() {
-		for (int i = 0; i < spreadsheet.getNumberOfSheets(); i++) {
-			Sheet s = spreadsheet.getWorkbook().getSheetAt(i);
-			getPopUpButtonsForSheet(s);
+		for (int i = 0; i < getAppUI().getSheet().getSpreadsheet().getNumberOfSheets(); i++) {
+			Sheet s =getAppUI().getSheet().getSpreadsheet().getWorkbook().getSheetAt(i);
+//			getPopUpButtonsForSheet(s);
 		}
 	}
 

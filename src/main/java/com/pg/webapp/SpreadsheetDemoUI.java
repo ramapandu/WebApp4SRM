@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.servlet.annotation.WebServlet;
 
 import com.pg.webapp.domain.LogTable;
+import com.pg.webapp.domain.Spreadsheet_DAO;
 import com.pg.webapp.domain.User;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -34,6 +35,7 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
 	}
 	private User user; 
 	 private LogTable logTable;
+	 private Spreadsheet_DAO sheet;
     Navigator navigator;
     
       protected static final String MAINVIEW = "main";
@@ -73,10 +75,19 @@ public class SpreadsheetDemoUI extends UI implements Serializable {
     public SpreadsheetDemoUI() {
     	user=new User();
     	logTable=new LogTable();
+    	sheet=new Spreadsheet_DAO();
     	
     }
 
-    @Override
+    public Spreadsheet_DAO getSheet() {
+		return sheet;
+	}
+
+	public void setSheet(Spreadsheet_DAO sheet) {
+		this.sheet = sheet;
+	}
+
+	@Override
     protected void init(VaadinRequest request) {
     	navigator = new Navigator(this,this);
 		navigator.addView("", new LoginView(navigator));
