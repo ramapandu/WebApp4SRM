@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ import com.vaadin.addon.spreadsheet.Spreadsheet.CellValueChangeListener;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeEvent;
 import com.vaadin.addon.spreadsheet.Spreadsheet.SheetChangeListener;
 import com.vaadin.addon.spreadsheet.SpreadsheetFilterTable;
+import com.vaadin.data.Item;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -168,6 +171,8 @@ public class SheetView extends CustomComponent implements View {
 		FileInputStream fs = new FileInputStream(
 				"C:/Users/rampa/Desktop/testsheets/logs.xlsx");
 		logTable = new Table();
+		logTable.setWidth("900px");
+		logTable.setHeight("800px");
 		logTable.addContainerProperty("User", String.class, null);
 		logTable.addContainerProperty("Action", String.class, null);
 		logTable.addContainerProperty("Date", String.class, null);
@@ -186,7 +191,7 @@ public class SheetView extends CustomComponent implements View {
 			i++;
 		}
 		fs.close();
-       logBook.close();
+//       logBook.close();
 		return logTable;
 	}
 
@@ -266,12 +271,85 @@ public class SheetView extends CustomComponent implements View {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					File tempFile = new File(
-							"C:/Users/rampa/Desktop/testsheets/test.xlsx");
+					File tempFile = new File("C:/Users/rampa/Desktop/testsheets/test.xlsx");
 					FileOutputStream fos = new FileOutputStream(tempFile);
 					spreadsheet.write(fos);
 					fos.flush();
 					fos.close();
+					
+										
+					File tempFile2 = new File("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
+					FileInputStream fis2 = new FileInputStream(tempFile2);
+					
+//					Spreadsheet s=new Spreadsheet(fis2);
+//					Workbook wb;
+//					int i=s.getLastRow();
+					
+					Collection<?> coll = logTable.getContainerDataSource().getItemIds();
+					Iterator<?> iterate=coll.iterator();
+					
+					int i=logSheet.getLastRowNum();
+					logSheet=logBook.getSheetAt(0);
+					
+	                for(int x = 1; x <= coll.size(); x++){
+	                	
+	                   Item item=logTable.getItem(iterate.next());
+	                    
+//	                   System.out.println(item.getItemProperty(1).getValue().toString());
+//	                   System.out.println(item.getItemProperty(2).getValue().toString());
+//	                   System.out.println(item.getItemProperty(3).getValue().toString());
+	                    						
+						logSheet.getRow(i).getCell(0).setCellValue(item.getItemProperty("User").getValue().toString());
+						logSheet.getRow(i).getCell(0).setCellValue(item.getItemProperty("Action").getValue().toString());
+						logSheet.getRow(i).getCell(0).setCellValue(item.getItemProperty("Date").getValue().toString());
+						
+//						logSheet.createRow(i);
+//						System.out.println("sheet "+logSheet.getRow(i).getCell(0).getStringCellValue());
+//						System.out.println("table "+logTable.getContainerDataSource().getItem(k).getItemProperty(1).getValue().toString());
+						
+						
+//						logSheet.getRow(i).getCell(0).setCellValue(logTable.getContainerDataSource().getItem(x).getItemProperty(1).getValue().toString());
+//						logSheet.getRow(i).getCell(0).setCellValue(logTable.getContainerDataSource().getItem(x).getItemProperty(2).getValue().toString());
+//						logSheet.getRow(i).getCell(0).setCellValue(logTable.getContainerDataSource().getItem(x).getItemProperty(3).getValue().toString());
+								
+//						logSheet.getRow(i+1).getCell(0).setCellValue(logTable.getItem(k).getItemProperty(1).getValue().toString());
+//						logSheet.getRow(i+1).getCell(1).setCellValue(logTable.getItem(k).getItemProperty(2).getValue().toString());
+//						logSheet.getRow(i+1).getCell(2).setCellValue(logTable.getItem(k).getItemProperty(3).getValue().toString());
+//						if(i<k)
+						
+	               				
+					}
+				
+					FileOutputStream fos2 = new FileOutputStream(tempFile2);
+				    logBook.write(fos2);
+//				    logBook.
+					fos2.flush();
+					fos2.close();
+//					logBook.close();
+//					logTable
+//					logTable.getr
+//					Byte[] bytes;
+//					ByteArrayInputStream bis=new ByteArrayInputStream(lo
+//					logBook.write(fos2);
+//					fos2.flush();
+//					fos2.close();
+//					ExcelExport excelExport;
+					
+//					File tempFile2 = new File("C:/Users/rampa/Desktop/testsheets/logs.xlsx");
+//					org.apache.poi.openxml4j.opc.OPCPackage opc = 
+//							   org.apache.poi.openxml4j.opc.OPCPackage.open(tempFile2);
+//							org.apache.poi.xssf.usermodel.XSSFWorkbook wb =
+//							   new org.apache.poi.xssf.usermodel.XSSFWorkbook(opc);
+//							java.io.FileOutputStream fileOut = new java.io.FileOutputStream(tempFile2);
+//							wb.write(fileOut);
+//							opc.close();
+//							fileOut.close(); 
+							
+//							FileInputStream fis = null; 
+//							try { 
+//							  fis = new FileInputStream(inputFilePath ); 
+//							  XSSFWorkbook workbook = new XSSFWorkbook(fis); 
+					
 					// ------getAppUI().getLogTable().setLogTable(logTable);
 					// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					// spreadsheet.write(bos);
@@ -322,7 +400,7 @@ public class SheetView extends CustomComponent implements View {
 					// copyFile(tempFile,testSheetFile);
 					// spreadsheet.setData(testSheetFile);
 					// spreadsheet.setData(sheet1);
-
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -388,9 +466,11 @@ public class SheetView extends CustomComponent implements View {
                     
 //                      changedCells.forEach(cell);
 //                    	if(c!=null){
+          			Date d = new Date();
+          			 
                      logTable.addItem(new Object[] { getAppUI().getUser().getLoggedInUser(),
-                    		c+ "Cell-"+element[2]+""+element[1]+"in sheet-"+
-                    				              spreadsheet.getActiveSheet().getSheetName(), "today" },
+                    		"Changed value in Cell-"+element[2]+""+element[1]+" in sheet-"+
+                    				              spreadsheet.getActiveSheet().getSheetName()+" to "+c,d.toString() },
      						new Integer(i+1));
 //                    	}
                     }
@@ -430,7 +510,16 @@ public class SheetView extends CustomComponent implements View {
 			// --------------
 
 			// Define the range
-			CellRangeAddress range = new CellRangeAddress(0, 300, 0, 50);
+			//TEST-----------------------------------------
+//			CellRangeAddress range = new CellRangeAddress(0, 300, 0, 50);
+//			System.out.println(sheet.getFirstRowNum() + ""
+//					+ sheet.getLastRowNum() + "" + 1);
+//			// Create a table in the range
+//			SpreadsheetFilterTable table = new SpreadsheetFilterTable(
+//					spreadsheet, sheet, range);
+//			table.getPopupButtons();
+			//TEST-----------------------------
+			CellRangeAddress range = new CellRangeAddress(0, sheet.getLastRowNum(), 0, 50);
 			System.out.println(sheet.getFirstRowNum() + ""
 					+ sheet.getLastRowNum() + "" + 1);
 			// Create a table in the range
@@ -438,7 +527,6 @@ public class SheetView extends CustomComponent implements View {
 					spreadsheet, sheet, range);
 			table.getPopupButtons();
 			// table.getSheet().
-
 		} catch (ArrayIndexOutOfBoundsException e) {
 			e.printStackTrace();
 		}
