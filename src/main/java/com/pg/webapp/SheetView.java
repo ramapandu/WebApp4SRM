@@ -450,7 +450,7 @@ public class SheetView extends CustomComponent implements View {
 
 			@Override
 			public void onSheetChange(SheetChangeEvent event) {
-				spreadsheet.unregisterTable(table);//---TEST
+				spreadsheet.unregisterTable(table);
 				getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 
 			}
@@ -460,50 +460,40 @@ public class SheetView extends CustomComponent implements View {
 			private static final long serialVersionUID = 1334987428943711253L;
                 @Override
 				public void onCellValueChange(CellValueChangeEvent event) {
-                	Set<CellReference> changedCells = null;
-                	changedCells = event.getChangedCells();
-                   
-//                    changedCells.forEach(cell--> stringBuffer.append(" "+String.valueOf(cell)));
-//                    changedCells.forEach(cell-->
-//                    Notification.show(stringBuffer.toString());
-                    Iterator<CellReference> iterator = changedCells.iterator();
-                    int i=logTable.size();
-                    CellReference cr;
-                    Row r;
-                    Cell c;
-                    String[] element;
-                    while(iterator.hasNext()){
-                      cr=iterator.next();
-                      element =cr.getCellRefParts();
-                      r = spreadsheet.getActiveSheet().getRow(Integer.valueOf(element[1])-1);
-                      c=null;
-//                    if (r != null) {
-                    	c=r.getCell(new Integer(cr.getCol()));
-//                       c = r.getCell(iterator.next().getCol());
-//                    	 System.out.println(r);
-                      System.out.println(c);
-//                    }
-                    
-//                      changedCells.forEach(cell);
-//                    	if(c!=null){
-          			Date d = new Date();
-          			 
-                     logTable.addItem(new Object[] { getAppUI().getUser().getLoggedInUser(),
-                    		"Changed value in Cell-"+element[2]+""+element[1]+" in sheet-"+
-                    				              spreadsheet.getActiveSheet().getSheetName()+" to "+c,d.toString() },
-     						new Integer(i+1));
-//                    	}
-                    }
-
-//				logTable.addItem(new Object[] { getAppUI().getUser().getLoggedInUser(),
-//						event.getChangedCells().toString(), "today" },
-//						new Integer(3));
+               updateLogTable(event);
 			}
+				
 		});
 		
 		return spreadsheet;
 	}
 
+	private void updateLogTable(CellValueChangeEvent event) {
+	 	Set<CellReference> changedCells = null;
+    	changedCells = event.getChangedCells();
+       
+        Iterator<CellReference> iterator = changedCells.iterator();
+        int i=logTable.size();
+        CellReference cr;
+        Row r;
+        Cell c;
+        String[] element;
+        while(iterator.hasNext()){
+          cr=iterator.next();
+          element =cr.getCellRefParts();
+          r = spreadsheet.getActiveSheet().getRow(Integer.valueOf(element[1])-1);
+          c=null;
+        	c=r.getCell(new Integer(cr.getCol()));
+        
+			Date d = new Date();
+			 
+         logTable.addItem(new Object[] { getAppUI().getUser().getLoggedInUser(),
+        		"Changed value in Cell-"+element[2]+""+element[1]+" in sheet-"+
+        				              spreadsheet.getActiveSheet().getSheetName()+" to "+c,d.toString() },
+					new Integer(i+1));
+        }					
+	}
+	
 	private void changeHeaderColor(Sheet activeSheet) {
 		CellStyle headerStyle = activeSheet.getWorkbook().createCellStyle();
 		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());		
@@ -517,7 +507,6 @@ public class SheetView extends CustomComponent implements View {
 			 int lastColumnNum=0;
 			 lastColumnNum= r.getLastCellNum()-1;
 
-			//TEST-----------------------------
 			range = new CellRangeAddress(0, sheet.getLastRowNum(), 0, lastColumnNum);
 			System.out.println("FIRSTROW:"+sheet.getFirstRowNum() + " LASTROW:"
 					+ sheet.getLastRowNum() + " LASTCOLUMN:" + lastColumnNum+" SHEET:"+sheet.getSheetName());
