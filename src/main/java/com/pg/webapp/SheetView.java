@@ -323,12 +323,9 @@ public class SheetView extends CustomComponent implements View {
 				
 					FileOutputStream fos2 = new FileOutputStream(tempFile2);
 				    logBook.write(fos2);
-//				    logBook.
 					fos2.flush();
 					fos2.close();
 //					logBook.close();
-//					logTable
-//					logTable.getr
 //					Byte[] bytes;
 //					ByteArrayInputStream bis=new ByteArrayInputStream(lo
 //					logBook.write(fos2);
@@ -356,56 +353,10 @@ public class SheetView extends CustomComponent implements View {
 					// spreadsheet.write(bos);
 					// byte[] data = bos.toByteArray();
 					// bos.close();
-					//
-					// URL testSheetResource1 = this.getClass().getClassLoader()
-					// .getResource("testsheets/SAP-DEAL4.xlsx");
-					// File tempFile = new File(testSheetResource1.toURI());
-					// // tempFile.
-					// FileOutputStream tempOutputStream = new
-					// FileOutputStream(tempFile);
-					// tempOutputStream.write(data);
-					// tempOutputStream.flush();
-					// tempOutputStream.close();
-					// ------------FINAL SAVE WORKING COPY
-					// URL testSheetResource1 = this.getClass().getClassLoader()
-					// .getResource("testsheets/SAP-DEAL1.xlsx");
-					// File tempFile = new File(testSheetResource1.toURI());
-					//
-					// // File tempFile1= File.createTempFile("testTemp",
-					// ".xlsx");
-					//
-					// FileOutputStream tempOutputStream = new
-					// FileOutputStream(tempFile);
-					// spreadsheet.write(tempOutputStream);
-					// tempOutputStream.flush();
-					// tempOutputStream.close();
-					// copyFile(tempFile,testSheetFile); //THIS CODE CAUSES
-					// SESSION EXPIRED PROBLEM
-					// tempFile.delete();
-					// /////////////////////////////////77
-					// setSession(getSession());
-					// spreadsheet.reload();
-					// spreadsheet.read(tempFile);
-					// getAppUI().getPage().reload();
-					// -----------------------------FINAL
-
-					// FileOutputStream fos= new FileOutputStream("myfile");
-					// ObjectOutputStream oos= new ObjectOutputStream(fos);
-					// oos.writeObject(al);
-					// oos.close();
-					// fos.close();
-
-					// -------------------------------------
-					// Spreadsheet sheet1 = new Spreadsheet(tempFile);
-					// spreadsheet= new Spreadsheet(tempFile);
-					// copyFile(tempFile,testSheetFile);
-					// spreadsheet.setData(testSheetFile);
-					// spreadsheet.setData(sheet1);
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 			}
 		});
 		return saveButton;
@@ -415,35 +366,13 @@ public class SheetView extends CustomComponent implements View {
 		fis = new FileInputStream("C:/Users/rampa/Desktop/testsheets/test.xlsx");
 		spreadsheet = new Spreadsheet(fis);
 		fis.close();
-		// getPopUpButtonsForSheet(spreadsheet.getActiveSheet());///////////TEST-----------
-		// //TEST-BEGIN ----------
-		// URL testSheetResource = this.getClass().getClassLoader()
-		// .getResource("testsheets/SAP-DEAL1.xlsx");
-		// testSheetFile = new File(testSheetResource.toURI());
-		// spreadsheet = new Spreadsheet(testSheetFile);
-		// TEST-END------------
+		
 		spreadsheet.setSizeFull();
 		spreadsheet.setHeight("550px");
 		getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
 		changeHeaderColor(spreadsheet.getActiveSheet());
 		// ------------getAppUI().getLogTable().setLogTable(logTable);
-//		XSSFCellStyle myStyle = null;
-//		myStyle.setFillForegroundColor(new XSSFColor((CTColor) new Color(255, 255, 255)));
-//		myStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-//		spreadsheet.getActiveSheet().getRow(0).setRowStyle((CellStyle) new Color(255, 255, 255));
-//		color newcolor=new Color();
-//		XSSFCellStyle myStyle = null;
-//		CellStyle headerStyle = spreadsheet.getActiveSheet().getWorkbook().createCellStyle();
-////		headerStyle.setFillBackgroundColor(IndexedColors.AQUA.getIndex());
-//		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
-//		DataFormat format = spreadsheet.getActiveSheet().getWorkbook().createDataFormat();
-//		ColorPicker backgroundColor = new ColorPicker();
-//		XSSFColor color = new XSSFColor(java.awt.Color.decode(newColor.getCSS()));
-//		spreadsheet.getActiveSheet().getRow(0).setRowStyle((CellStyle) backgroundColor);
-//				XSSFCellStyle myStyle = wb.createCellStyle();           
-
-				
-				
+        
 		spreadsheet.addSheetChangeListener(new SheetChangeListener() {
 
 			private static final long serialVersionUID = -5585430837302587763L;
@@ -452,7 +381,6 @@ public class SheetView extends CustomComponent implements View {
 			public void onSheetChange(SheetChangeEvent event) {
 				spreadsheet.unregisterTable(table);
 				getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
-
 			}
 		});
 		spreadsheet.addCellValueChangeListener(new CellValueChangeListener() {
@@ -462,7 +390,6 @@ public class SheetView extends CustomComponent implements View {
 				public void onCellValueChange(CellValueChangeEvent event) {
                updateLogTable(event);
 			}
-				
 		});
 		
 		return spreadsheet;
@@ -495,8 +422,11 @@ public class SheetView extends CustomComponent implements View {
 	}
 	
 	private void changeHeaderColor(Sheet activeSheet) {
-		CellStyle headerStyle = activeSheet.getWorkbook().createCellStyle();
-		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());		
+		CellStyle headerStyle = spreadsheet.getWorkbook().createCellStyle();
+		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
+		System.out.println(activeSheet.getRow(0).getCell(0).getCellStyle());
+		activeSheet.getRow(1).getCell(0).getCellStyle().setFillBackgroundColor(IndexedColors.BLUE.getIndex());
+		System.out.println(activeSheet.getRow(0).getCell(0).getCellStyle());
 	}
 
 	public void getPopUpButtonsForSheet(Sheet sheet)
