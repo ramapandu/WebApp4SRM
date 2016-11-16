@@ -18,90 +18,92 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class LoginView extends CustomComponent implements View {
-	
-private SheetView sheetview;
-   	private static final long serialVersionUID = 1571188358428569977L;
+
+	private SheetView sheetview;
+	private static final long serialVersionUID = 1571188358428569977L;
 
 	public static final String NAME = "login";
-   
-   
 
 	String username;
-    String password;
-    SpreadsheetDemoUI ui;
-    VerticalLayout mainLayout;
-TextField emailField;
-PasswordField passwordField;
-//final String path = "/resources";
+	String password;
+	SpreadsheetDemoUI ui;
+	VerticalLayout mainLayout;
+	TextField emailField;
+	PasswordField passwordField;
 
-   
-    public LoginView(final Navigator navigator) {
-    	setSizeFull();
-        mainLayout = new VerticalLayout();
-        mainLayout.setStyleName("backgroundimage");
-        setCompositionRoot(mainLayout);
-        
-        
-       
-        FormLayout loginForm=new FormLayout();
-       this.ui=getAppUI();
-      
-       
-      emailField = new TextField("Email");
-        loginForm.addComponent(emailField);
-        emailField.setStyleName("labelred");
-        
+	// final String path = "/resources";
 
-       passwordField = new PasswordField("Password");
-       passwordField.setStyleName("labelred");
-        loginForm.addComponent(passwordField);
+	public LoginView(final Navigator navigator) {
+		setSizeFull();
+		mainLayout = new VerticalLayout();
+		mainLayout.setStyleName("backgroundimage");
+		setCompositionRoot(mainLayout);
 
-        final Button loginButton = new Button("Login", new Button.ClickListener() {
-			private static final long serialVersionUID = -892611583835722967L;
+		FormLayout loginForm = new FormLayout();
+		this.ui = getAppUI();
 
-			@Override
-            public void buttonClick(ClickEvent event) {
-            	 username = emailField.getValue();
-                 password = passwordField.getValue();
-            	if(username.equals("test@test.com") && password.equals("test12345")){
-                Notification.show("Welcome " + username);
-//                user.setLoggedInUser(username);
-                getAppUI().getUser().setLoggedInUser(username);
-                getAppUI().getNavigator().navigateTo("sheet");
-                
-            	}
-            }
-        });
-        
-        final Button cancelButton = new Button("Cancel", new Button.ClickListener() {
-           
-			private static final long serialVersionUID = -2766935020155002360L;
+		emailField = new TextField("Email");
+		loginForm.addComponent(emailField);
+		emailField.setStyleName("labelred");
 
-			@Override
-            public void buttonClick(ClickEvent event) {
-            	            }
-        });    
-        
-        HorizontalLayout buttonsContainer=new HorizontalLayout();
-        buttonsContainer.addComponent(loginButton);
-        buttonsContainer.addComponent(cancelButton);
-        Label note=new Label("Login with Username:test@test.com and Password:test12345 to use the application");
-        note.setStyleName("labelwhite");
-        buttonsContainer.addComponent(note);
-        buttonsContainer.setSpacing(true);
-        loginForm.addComponent(buttonsContainer);
-        loginForm.setComponentAlignment(buttonsContainer, Alignment.MIDDLE_CENTER);
-        loginForm.setSpacing(true);
-        mainLayout.addComponent(loginForm);
-        mainLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-    }
-    
-    @Override
-    public void enter(ViewChangeEvent event) {
-    	emailField.focus();
-    }
-    
-   SpreadsheetDemoUI getAppUI() {
+		passwordField = new PasswordField("Password");
+		passwordField.setStyleName("labelred");
+		loginForm.addComponent(passwordField);
+
+		final Button loginButton = new Button("Login",
+				new Button.ClickListener() {
+					private static final long serialVersionUID = -892611583835722967L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						username = emailField.getValue();
+						password = passwordField.getValue();
+						if (username.equals("test@test.com")
+								&& password.equals("test12345")) {
+							Notification.show("Welcome " + username);
+							// user.setLoggedInUser(username);
+							getAppUI().getUser().setLoggedInUser(username);
+							getAppUI().getNavigator().navigateTo("sheet");
+
+						} else {
+							Notification.show("User name OR Password is wrong");
+						}
+
+					}
+				});
+
+		final Button cancelButton = new Button("Cancel",
+				new Button.ClickListener() {
+
+					private static final long serialVersionUID = -2766935020155002360L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+					}
+				});
+
+		HorizontalLayout buttonsContainer = new HorizontalLayout();
+		buttonsContainer.addComponent(loginButton);
+		buttonsContainer.addComponent(cancelButton);
+		Label note = new Label(
+				"Login with Username:test@test.com and Password:test12345 to use the application");
+		note.setStyleName("labelwhite");
+		buttonsContainer.addComponent(note);
+		buttonsContainer.setSpacing(true);
+		loginForm.addComponent(buttonsContainer);
+		loginForm.setComponentAlignment(buttonsContainer,
+				Alignment.MIDDLE_CENTER);
+		loginForm.setSpacing(true);
+		mainLayout.addComponent(loginForm);
+		mainLayout.setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		emailField.focus();
+	}
+
+	SpreadsheetDemoUI getAppUI() {
 		return (SpreadsheetDemoUI) UI.getCurrent();
 	}
 

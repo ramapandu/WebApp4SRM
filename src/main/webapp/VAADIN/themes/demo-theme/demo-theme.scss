@@ -66,7 +66,51 @@ $v-gradient: false;
     width: 1350px;
     color: blue;
 } 
+ 
+ .v-label-labelwhite{
+    color: blueviolet;
+    line-height: 28px;
+    }
     
+    
+    //Header columns
+    .col1.row1.cell.cs0 {
+    color: red;
+    background-color:blue;
+}
+    
+    
+    .mainlayout{
+    height: 650px;
+    width: 100%;
+    colr:red;
+    }
+    
+    .backgroundblack{
+    background: black;
+     
+    }
+    
+     .logoutbutton{
+   margin-left: 310px;
+   }
+   
+   .title{
+  font-size: 70px;
+  color: red;
+  display: inline-table;
+  font-weight: 700;
+   padding-left: 400px;
+    line-height: 90px;
+    text-decoration: underline;
+    
+    }
+    
+      .topBar{
+    background: #000000;
+        height: 100px;
+    width: 100%;
+    }   
   
    //topBar
   .topbar{
@@ -76,7 +120,7 @@ $v-gradient: false;
   }
   
   .sheetlayout{
-  height:80%;
+  height:60%;
   width:100%;
   }
   
