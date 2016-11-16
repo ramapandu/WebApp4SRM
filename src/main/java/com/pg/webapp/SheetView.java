@@ -12,15 +12,18 @@ import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.addon.spreadsheet.Spreadsheet;
 import com.vaadin.addon.spreadsheet.Spreadsheet.CellValueChangeEvent;
 import com.vaadin.addon.spreadsheet.Spreadsheet.CellValueChangeListener;
@@ -33,12 +36,10 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.colorpicker.Color;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ColorPicker;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
@@ -381,6 +382,7 @@ public class SheetView extends CustomComponent implements View {
 			public void onSheetChange(SheetChangeEvent event) {
 				spreadsheet.unregisterTable(table);
 				getPopUpButtonsForSheet(spreadsheet.getActiveSheet());
+				changeHeaderColor(spreadsheet.getActiveSheet());
 			}
 		});
 		spreadsheet.addCellValueChangeListener(new CellValueChangeListener() {
@@ -422,11 +424,32 @@ public class SheetView extends CustomComponent implements View {
 	}
 	
 	private void changeHeaderColor(Sheet activeSheet) {
+		
+		//TEST
 		CellStyle headerStyle = spreadsheet.getWorkbook().createCellStyle();
-		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
-		System.out.println(activeSheet.getRow(0).getCell(0).getCellStyle());
-		activeSheet.getRow(1).getCell(0).getCellStyle().setFillBackgroundColor(IndexedColors.BLUE.getIndex());
-		System.out.println(activeSheet.getRow(0).getCell(0).getCellStyle());
+		
+//		headerStyle.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND);
+//		headerStyle.setFillForegroundColor(new XSSFColor(style.getProperty(CssColorProperty.BACKGROUND)));
+//		headerStyle.setFillBackgroundColor(IndexedColors.BLACK.getIndex());
+	
+		headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		headerStyle.setFillForegroundColor(IndexedColors.BLACK.getIndex());
+				Font font = spreadsheet.getWorkbook().createFont();
+				font.setColor(IndexedColors.RED.getIndex());
+				headerStyle.setFont(font);
+//				activeSheet.getRow(1).getCell(1).setCellStyle(headerStyle);
+				activeSheet.getRow(0).setRowStyle(headerStyle);
+//				activeSheet.getRow(0).getRowStyle()
+				
+				
+				
+//				CellStyle headerStyle = spreadsheet.getWorkbook().createCellStyle();	
+//		headerStyle.setFillBackgroundColor(IndexedColors.BLUE.getIndex());
+//		System.out.println(activeSheet.getRow(0).getCell(0).getCellStyle().getFillBackgroundColorColor());
+//		activeSheet.getRow(1).getCell(2).setCellStyle(headerStyle);
+//		System.out.println(activeSheet.getRow(0).getCell(0).getCellStyle());
+		
+		
 	}
 
 	public void getPopUpButtonsForSheet(Sheet sheet)
